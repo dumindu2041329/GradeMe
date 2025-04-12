@@ -659,7 +659,7 @@ const Exams = () => {
             {/* Go to Top Button */}
             <button
               onClick={scrollToTop}
-              className="fixed bottom-4 right-4 bg-primary text-primary-foreground p-2 rounded-full shadow-lg hover:bg-primary/90 transition-colors"
+              className="fixed bottom-8 right-8 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white p-3 rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 z-50"
               title="Go to top"
             >
               <ArrowUp className="h-5 w-5" />

@@ -56,3 +56,50 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+/* Light mode scrollbar styles */
+::-webkit-scrollbar-track {
+  background: linear-gradient(to bottom, rgba(99, 102, 241, 0.05), rgba(129, 140, 248, 0.1));
+  border-radius: 100vh;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #6366f1, #818cf8);
+  border-radius: 100vh;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #4f46e5, #6366f1);
+  border-width: 1px;
+}
+
+/* Dark mode scrollbar styles */
+.dark ::-webkit-scrollbar-track {
+  background: linear-gradient(to bottom, rgba(99, 102, 241, 0.1), rgba(165, 180, 252, 0.05));
+  border-radius: 100vh;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #818cf8, #a5b4fc);
+  border-radius: 100vh;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  background-clip: content-box;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #a5b4fc, #c7d2fe);
+  border-width: 1px;
+}
+
+/* Scrollbar corner */
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
