@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
 import { BookOpen, Users, FileSpreadsheet, Settings, LogOut, Sun, Moon, Menu, X, User } from 'lucide-react';
 import Dashboard from './components/Dashboard';
@@ -44,6 +44,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const desktopMenuRef = useRef<HTMLDivElement>(null);
 
   const toggleTheme = () => {
     const newTheme = !isDark;
@@ -73,6 +75,22 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     setIsUserMenuOpen(false);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) &&
+        (desktopMenuRef.current && !desktopMenuRef.current.contains(event.target as Node))
+      ) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Mobile Header */}
@@ -84,12 +102,31 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <BookOpen className="h-6 w-6" />
           GradeMe
         </h1>
-        <button
-          onClick={toggleUserMenu}
-          className="relative w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"
-        >
-          <User className="h-5 w-5" />
-        </button>
+        <div ref={mobileMenuRef}>
+          <button
+            onClick={toggleUserMenu}
+            className="relative w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"
+          >
+            <User className="h-5 w-5" />
+          </button>
+          {isUserMenuOpen && (
+            <div className="absolute right-4 mt-2 w-48 rounded-md shadow-lg bg-card border border-border">
+              <div className="py-2">
+                <div className="px-4 py-2 border-b border-border">
+                  <p className="text-sm font-medium text-card-foreground">Admin User</p>
+                  <p className="text-xs text-muted-foreground">admin@example.com</p>
+                </div>
+                <Link
+                  to="/profile"
+                  onClick={closeUserMenu}
+                  className="block w-full text-left px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                >
+                  View Profile
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="flex min-h-screen">
@@ -156,7 +193,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="flex-1 flex flex-col min-h-screen">
           {/* Desktop Header */}
           <div className="hidden lg:flex items-center justify-end p-4 border-b border-border bg-card">
-            <div className="relative">
+            <div className="relative" ref={desktopMenuRef}>
               <button
                 onClick={toggleUserMenu}
                 className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"

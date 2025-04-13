@@ -109,13 +109,13 @@ const Profile = () => {
           ) : (
             <div className="space-y-6">
               <form onSubmit={handleProfileUpdate} className="space-y-6">
-                <div className="relative group">
+                <div className="relative group w-24 h-24">
                   <img
                     src={editData.profilePicture}
                     alt="Profile"
-                    className="w-24 h-24 rounded-full object-cover border-4 border-primary/20 group-hover:opacity-75 transition-opacity"
+                    className="w-full h-full rounded-full object-cover border-4 border-primary/20 group-hover:opacity-75 transition-opacity"
                   />
-                  <label className="absolute inset-0 flex items-center justify-center w-24 h-24 cursor-pointer opacity-0 group-hover:opacity-100">
+                  <label className="absolute inset-0 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
                     <Camera className="h-8 w-8 text-white drop-shadow-lg" />
                     <input
                       type="file"
