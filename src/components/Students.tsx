@@ -73,7 +73,7 @@ const Students = () => {
         <h1 className="text-2xl font-bold text-foreground">Students</h1>
         <button 
           onClick={handleCreateClick}
-          className="bg-primary text-primary-foreground px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary/90 transition-colors"
+          className="action-button"
         >
           <Plus className="h-5 w-5" />
           Add Student

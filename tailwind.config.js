@@ -44,6 +44,9 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      animation: {
+        'modal-appear': 'modalAppear 0.3s ease-out forwards',
+      },
     },
   },
   plugins: [],
