@@ -496,13 +496,13 @@ const Exams = () => {
                 </div>
 
                 <div className="border-t border-border pt-4 mt-4">
-                  <div className="flex justify-between items-center mb-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-4">
                     <h3 className="text-lg font-semibold text-card-foreground">Questions</h3>
-                    <div className="relative w-64">
+                    <div className="relative w-full sm:w-48 md:w-64">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <input
                         type="text"
-                        placeholder="Search by question text..."
+                        placeholder="Search questions..."
                         value={questionSearchQuery}
                         onChange={(e) => setQuestionSearchQuery(e.target.value)}
                         className="pl-9 pr-4 py-2 border border-input rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground placeholder-muted-foreground text-sm"

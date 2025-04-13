@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
-import { BookOpen, Users, FileSpreadsheet, Settings, LogOut, Sun, Moon } from 'lucide-react';
+import { BookOpen, Users, FileSpreadsheet, Settings, LogOut, Sun, Moon, Menu, X } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import Exams from './components/Exams';
 import Students from './components/Students';
@@ -41,6 +41,7 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleTheme = () => {
     const newTheme = !isDark;
@@ -54,30 +55,62 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     navigate('/login');
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Mobile Header */}
+      <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card">
+        <button onClick={toggleSidebar} className="text-foreground">
+          <Menu className="h-6 w-6" />
+        </button>
+        <h1 className="text-xl font-bold text-primary flex items-center gap-2">
+          <BookOpen className="h-6 w-6" />
+          GradeMe
+        </h1>
+        <div className="w-6" /> {/* Spacer for alignment */}
+      </div>
+
       <div className="flex min-h-screen">
-        <aside className="w-64 bg-card border-r border-border">
-          <div className="p-6">
+        {/* Sidebar Overlay */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onClick={closeSidebar}
+          />
+        )}
+
+        {/* Sidebar */}
+        <aside className={`
+          fixed lg:static inset-y-0 left-0 z-50 w-64 bg-card border-r border-border transform transition-transform duration-300 ease-in-out
+          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}>
+          <div className="p-6 hidden lg:block">
             <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
               <BookOpen className="h-6 w-6" />
               GradeMe
             </h1>
           </div>
           <nav className="mt-6">
-            <Link to="/" className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+            <Link to="/" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
               <FileSpreadsheet className="h-5 w-5 mr-3" />
               Dashboard
             </Link>
-            <Link to="/exams" className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+            <Link to="/exams" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
               <BookOpen className="h-5 w-5 mr-3" />
               Exams
             </Link>
-            <Link to="/students" className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+            <Link to="/students" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
               <Users className="h-5 w-5 mr-3" />
               Students
             </Link>
-            <Link to="/results" className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+            <Link to="/results" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
               <FileSpreadsheet className="h-5 w-5 mr-3" />
               Results
             </Link>
@@ -103,7 +136,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </button>
           </div>
         </aside>
-        <main className="flex-1 p-8">{children}</main>
+
+        {/* Main Content */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full">{children}</main>
       </div>
     </div>
   );
