@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
-import { BookOpen, Users, FileSpreadsheet, Settings, LogOut, Sun, Moon, Menu, X } from 'lucide-react';
+import { BookOpen, Users, FileSpreadsheet, Settings, LogOut, Sun, Moon, Menu, X, User } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import Exams from './components/Exams';
 import Students from './components/Students';
 import Results from './components/Results';
+import Profile from './components/Profile';
 import Login from './components/Login';
 
 const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
@@ -42,6 +43,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const toggleTheme = () => {
     const newTheme = !isDark;
@@ -63,6 +65,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     setIsSidebarOpen(false);
   };
 
+  const toggleUserMenu = () => {
+    setIsUserMenuOpen(!isUserMenuOpen);
+  };
+
+  const closeUserMenu = () => {
+    setIsUserMenuOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Mobile Header */}
@@ -74,7 +84,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <BookOpen className="h-6 w-6" />
           GradeMe
         </h1>
-        <div className="w-6" /> {/* Spacer for alignment */}
+        <button
+          onClick={toggleUserMenu}
+          className="relative w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"
+        >
+          <User className="h-5 w-5" />
+        </button>
       </div>
 
       <div className="flex min-h-screen">
@@ -138,7 +153,40 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full">{children}</main>
+        <div className="flex-1 flex flex-col min-h-screen">
+          {/* Desktop Header */}
+          <div className="hidden lg:flex items-center justify-end p-4 border-b border-border bg-card">
+            <div className="relative">
+              <button
+                onClick={toggleUserMenu}
+                className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"
+              >
+                <User className="h-6 w-6" />
+              </button>
+              
+              {/* User Menu Dropdown */}
+              {isUserMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-card border border-border">
+                  <div className="py-2">
+                    <div className="px-4 py-2 border-b border-border">
+                      <p className="text-sm font-medium text-card-foreground">Admin User</p>
+                      <p className="text-xs text-muted-foreground">admin@example.com</p>
+                    </div>
+                    <Link
+                      to="/profile"
+                      onClick={closeUserMenu}
+                      className="block w-full text-left px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    >
+                      View Profile
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+        </div>
       </div>
     </div>
   );
@@ -186,6 +234,16 @@ function App() {
               <PrivateRoute>
                 <Layout>
                   <Results />
+                </Layout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <Profile />
                 </Layout>
               </PrivateRoute>
             }
