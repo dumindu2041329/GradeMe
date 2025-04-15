@@ -68,160 +68,163 @@ const Students = () => {
   });
 
   return (
-    <div className="mt-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Students</h1>
-        <button 
-          onClick={handleCreateClick}
-          className="action-button"
-        >
-          <Plus className="h-5 w-5" />
-          Add Student
-        </button>
-      </div>
-
-      <div className="bg-card rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border border-border">
-        <div className="p-4 border-b border-border">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-            <input
-              type="text"
-              placeholder="Search students..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-input rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground placeholder-muted-foreground"
-            />
-          </div>
+    <div className="h-[calc(100vh-60px)] lg:h-[calc(100vh-120px)] overflow-y-auto">
+      <div className="px-4 lg:px-8 py-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <h1 className="text-2xl font-bold text-foreground">Students</h1>
+          <button 
+            onClick={handleCreateClick}
+            className="action-button w-full sm:w-auto"
+          >
+            <Plus className="h-5 w-5" />
+            Add Student
+          </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="bg-muted">
-                <th className="text-left py-3 px-4 text-muted-foreground">Name</th>
-                <th className="text-left py-3 px-4 text-muted-foreground">Email</th>
-                <th className="text-left py-3 px-4 text-muted-foreground">Class</th>
-                <th className="text-left py-3 px-4 text-muted-foreground">Enrollment Date</th>
-                <th className="text-left py-3 px-4 text-muted-foreground">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredStudents.map((student) => (
-                <tr key={student.id} className="border-b border-border">
-                  <td className="py-3 px-4 text-card-foreground">{student.name}</td>
-                  <td className="py-3 px-4 text-card-foreground">{student.email}</td>
-                  <td className="py-3 px-4 text-card-foreground">{student.class}</td>
-                  <td className="py-3 px-4 text-muted-foreground">{student.enrollmentDate}</td>
-                  <td className="py-3 px-4">
-                    <div className="flex gap-2">
-                      <button 
-                        className="text-primary hover:text-primary/80"
-                        onClick={() => handleEditClick(student)}
-                      >
-                        <Edit2 className="h-5 w-5" />
-                      </button>
-                      <button 
-                        className="text-destructive hover:text-destructive/80"
-                        onClick={() => handleDelete(student.id)}
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Create/Edit Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
-          <div className="bg-card rounded-lg p-6 w-full max-w-md border border-border">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-card-foreground">{editingStudent ? 'Edit Student' : 'Add Student'}</h2>
-              <button 
-                onClick={() => setIsModalOpen(false)}
-                className="text-muted-foreground hover:text-card-foreground"
-              >
-                <X className="h-5 w-5" />
-              </button>
+        <div className="bg-card rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border border-border">
+          <div className="p-4 border-b border-border">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <input
+                type="text"
+                placeholder="Search students..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-input rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground placeholder-muted-foreground"
+              />
             </div>
-            <form onSubmit={handleSubmit}>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-card-foreground">Name</label>
-                  <input
-                    type="text"
-                    value={editingStudent ? editingStudent.name : newStudent.name}
-                    onChange={(e) => editingStudent
-                      ? setEditingStudent({ ...editingStudent, name: e.target.value })
-                      : setNewStudent({ ...newStudent, name: e.target.value })
-                    }
-                    className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-card-foreground">Email</label>
-                  <input
-                    type="email"
-                    value={editingStudent ? editingStudent.email : newStudent.email}
-                    onChange={(e) => editingStudent
-                      ? setEditingStudent({ ...editingStudent, email: e.target.value })
-                      : setNewStudent({ ...newStudent, email: e.target.value })
-                    }
-                    className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-card-foreground">Class</label>
-                  <input
-                    type="text"
-                    value={editingStudent ? editingStudent.class : newStudent.class}
-                    onChange={(e) => editingStudent
-                      ? setEditingStudent({ ...editingStudent, class: e.target.value })
-                      : setNewStudent({ ...newStudent, class: e.target.value })
-                    }
-                    className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-card-foreground">Enrollment Date</label>
-                  <input
-                    type="date"
-                    value={editingStudent ? editingStudent.enrollmentDate : newStudent.enrollmentDate}
-                    onChange={(e) => editingStudent
-                      ? setEditingStudent({ ...editingStudent, enrollmentDate: e.target.value })
-                      : setNewStudent({ ...newStudent, enrollmentDate: e.target.value })
-                    }
-                    className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
-                    required
-                  />
-                </div>
-                <div className="flex justify-end gap-2 mt-6">
-                  <button
-                    type="button"
-                    onClick={() => setIsModalOpen(false)}
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground bg-secondary hover:bg-secondary/80 rounded-md"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-md"
-                  >
-                    {editingStudent ? 'Save Changes' : 'Add Student'}
-                  </button>
-                </div>
-              </div>
-            </form>
+          </div>
+
+          <div className="overflow-x-auto">
+            <div className="min-w-[800px] lg:min-w-full">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-muted">
+                    <th className="text-left py-3 px-4 text-muted-foreground">Name</th>
+                    <th className="text-left py-3 px-4 text-muted-foreground">Email</th>
+                    <th className="text-left py-3 px-4 text-muted-foreground">Class</th>
+                    <th className="text-left py-3 px-4 text-muted-foreground">Enrollment Date</th>
+                    <th className="text-left py-3 px-4 text-muted-foreground">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredStudents.map((student) => (
+                    <tr key={student.id} className="border-b border-border">
+                      <td className="py-3 px-4 text-card-foreground">{student.name}</td>
+                      <td className="py-3 px-4 text-card-foreground">{student.email}</td>
+                      <td className="py-3 px-4 text-card-foreground">{student.class}</td>
+                      <td className="py-3 px-4 text-muted-foreground">{student.enrollmentDate}</td>
+                      <td className="py-3 px-4">
+                        <div className="flex gap-2">
+                          <button 
+                            className="text-primary hover:text-primary/80"
+                            onClick={() => handleEditClick(student)}
+                          >
+                            <Edit2 className="h-5 w-5" />
+                          </button>
+                          <button 
+                            className="text-destructive hover:text-destructive/80"
+                            onClick={() => handleDelete(student.id)}
+                          >
+                            <Trash2 className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      )}
+
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
+            <div className="bg-card rounded-lg p-6 w-full max-w-md border border-border">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-card-foreground">{editingStudent ? 'Edit Student' : 'Add Student'}</h2>
+                <button 
+                  onClick={() => setIsModalOpen(false)}
+                  className="text-muted-foreground hover:text-card-foreground"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-card-foreground">Name</label>
+                    <input
+                      type="text"
+                      value={editingStudent ? editingStudent.name : newStudent.name}
+                      onChange={(e) => editingStudent
+                        ? setEditingStudent({ ...editingStudent, name: e.target.value })
+                        : setNewStudent({ ...newStudent, name: e.target.value })
+                      }
+                      className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-card-foreground">Email</label>
+                    <input
+                      type="email"
+                      value={editingStudent ? editingStudent.email : newStudent.email}
+                      onChange={(e) => editingStudent
+                        ? setEditingStudent({ ...editingStudent, email: e.target.value })
+                        : setNewStudent({ ...newStudent, email: e.target.value })
+                      }
+                      className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-card-foreground">Class</label>
+                    <input
+                      type="text"
+                      value={editingStudent ? editingStudent.class : newStudent.class}
+                      onChange={(e) => editingStudent
+                        ? setEditingStudent({ ...editingStudent, class: e.target.value })
+                        : setNewStudent({ ...newStudent, class: e.target.value })
+                      }
+                      className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-card-foreground">Enrollment Date</label>
+                    <input
+                      type="date"
+                      value={editingStudent ? editingStudent.enrollmentDate : newStudent.enrollmentDate}
+                      onChange={(e) => editingStudent
+                        ? setEditingStudent({ ...editingStudent, enrollmentDate: e.target.value })
+                        : setNewStudent({ ...newStudent, enrollmentDate: e.target.value })
+                      }
+                      className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
+                      required
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2 mt-6">
+                    <button
+                      type="button"
+                      onClick={() => setIsModalOpen(false)}
+                      className="px-4 py-2 text-sm font-medium text-muted-foreground bg-secondary hover:bg-secondary/80 rounded-md"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-md"
+                    >
+                      {editingStudent ? 'Save Changes' : 'Add Student'}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

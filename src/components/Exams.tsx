@@ -332,341 +332,345 @@ const Exams = () => {
   };
 
   return (
-    <div className="mt-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Exams</h1>
-        <button 
-          onClick={handleCreateClick}
-          className="action-button"
-        >
-          <Plus className="h-5 w-5" />
-          Create Exam
-        </button>
-      </div>
+    <div className="h-[calc(100vh-60px)] lg:h-[calc(100vh-120px)] overflow-y-auto">
+      <div className="px-4 lg:px-8 py-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <h1 className="text-2xl font-bold text-foreground">Exams</h1>
+          <button 
+            onClick={handleCreateClick}
+            className="action-button w-full sm:w-auto"
+          >
+            <Plus className="h-5 w-5" />
+            Create Exam
+          </button>
+        </div>
 
-      <div className="bg-card rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border border-border">
-        <div className="p-4 border-b border-border">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-            <input
-              type="text"
-              placeholder="Search exams..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-input rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground placeholder-muted-foreground"
-            />
+        <div className="bg-card rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border border-border">
+          <div className="p-4 border-b border-border">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <input
+                type="text"
+                placeholder="Search exams..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-input rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground placeholder-muted-foreground"
+              />
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <div className="min-w-[800px] lg:min-w-full">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-muted">
+                    <th className="text-left py-3 px-4 text-muted-foreground">Exam Name</th>
+                    <th className="text-left py-3 px-4 text-muted-foreground">Subject</th>
+                    <th className="text-left py-3 px-4 text-muted-foreground">Date</th>
+                    <th className="text-left py-3 px-4 text-muted-foreground">Duration</th>
+                    <th className="text-left py-3 px-4 text-muted-foreground">Total Marks</th>
+                    <th className="text-left py-3 px-4 text-muted-foreground">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredExams.map((exam) => (
+                    <tr key={exam.id} className="border-b border-border">
+                      <td className="py-3 px-4 text-card-foreground">{exam.name}</td>
+                      <td className="py-3 px-4 text-card-foreground">{exam.subject}</td>
+                      <td className="py-3 px-4 text-muted-foreground">{exam.date}</td>
+                      <td className="py-3 px-4 text-muted-foreground">{exam.duration}</td>
+                      <td className="py-3 px-4 text-primary font-semibold">{exam.totalMarks}</td>
+                      <td className="py-3 px-4">
+                        <div className="flex gap-2">
+                          <button 
+                            className="text-primary hover:text-primary/80"
+                            onClick={() => handleEditClick(exam)}
+                          >
+                            <Edit2 className="h-5 w-5" />
+                          </button>
+                          <button 
+                            className="text-destructive hover:text-destructive/80"
+                            onClick={() => handleDelete(exam.id)}
+                          >
+                            <Trash2 className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="bg-muted">
-                <th className="text-left py-3 px-4 text-muted-foreground">Exam Name</th>
-                <th className="text-left py-3 px-4 text-muted-foreground">Subject</th>
-                <th className="text-left py-3 px-4 text-muted-foreground">Date</th>
-                <th className="text-left py-3 px-4 text-muted-foreground">Duration</th>
-                <th className="text-left py-3 px-4 text-muted-foreground">Total Marks</th>
-                <th className="text-left py-3 px-4 text-muted-foreground">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredExams.map((exam) => (
-                <tr key={exam.id} className="border-b border-border">
-                  <td className="py-3 px-4 text-card-foreground">{exam.name}</td>
-                  <td className="py-3 px-4 text-card-foreground">{exam.subject}</td>
-                  <td className="py-3 px-4 text-muted-foreground">{exam.date}</td>
-                  <td className="py-3 px-4 text-muted-foreground">{exam.duration}</td>
-                  <td className="py-3 px-4 text-primary font-semibold">{exam.totalMarks}</td>
-                  <td className="py-3 px-4">
-                    <div className="flex gap-2">
-                      <button 
-                        className="text-primary hover:text-primary/80"
-                        onClick={() => handleEditClick(exam)}
-                      >
-                        <Edit2 className="h-5 w-5" />
-                      </button>
-                      <button 
-                        className="text-destructive hover:text-destructive/80"
-                        onClick={() => handleDelete(exam.id)}
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Create/Edit Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
-          <div ref={modalRef} className="bg-card rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative border border-border">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-card-foreground">{editingExam ? 'Edit Exam' : 'Create Exam'}</h2>
-              <button 
-                onClick={handleCloseModal}
-                className="text-muted-foreground hover:text-card-foreground"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <form onSubmit={handleSubmit}>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-card-foreground">Exam Name</label>
-                    <input
-                      type="text"
-                      value={editingExam ? editingExam.name : newExam.name}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        editingExam 
-                          ? setEditingExam({ ...editingExam, name: value })
-                          : setNewExam({ ...newExam, name: value });
-                      }}
-                      className={`mt-1 block w-full rounded-md border shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 ${
-                        formErrors.name ? 'border-destructive' : 'border-input'
-                      }`}
-                      required
-                    />
-                    {formErrors.name && (
-                      <p className="mt-1 text-sm text-destructive">{formErrors.name}</p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-card-foreground">Subject</label>
-                    <input
-                      type="text"
-                      value={editingExam ? editingExam.subject : newExam.subject}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        editingExam
-                          ? setEditingExam({ ...editingExam, subject: value })
-                          : setNewExam({ ...newExam, subject: value });
-                      }}
-                      className={`mt-1 block w-full rounded-md border shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 ${
-                        formErrors.subject ? 'border-destructive' : 'border-input'
-                      }`}
-                      required
-                    />
-                    {formErrors.subject && (
-                      <p className="mt-1 text-sm text-destructive">{formErrors.subject}</p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-card-foreground">Date</label>
-                    <input
-                      type="date"
-                      value={editingExam ? editingExam.date : newExam.date}
-                      onChange={(e) => editingExam
-                        ? setEditingExam({ ...editingExam, date: e.target.value })
-                        : setNewExam({ ...newExam, date: e.target.value })
-                      }
-                      className={`mt-1 block w-full rounded-md border shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 ${
-                        formErrors.date ? 'border-destructive' : 'border-input'
-                      }`}
-                      required
-                    />
-                    {formErrors.date && (
-                      <p className="mt-1 text-sm text-destructive">{formErrors.date}</p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-card-foreground">Duration</label>
-                    <select
-                      value={editingExam ? editingExam.duration : newExam.duration}
-                      onChange={(e) => editingExam
-                        ? setEditingExam({ ...editingExam, duration: e.target.value })
-                        : setNewExam({ ...newExam, duration: e.target.value })
-                      }
-                      className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
-                      required
-                    >
-                      {DURATION_OPTIONS.map((duration) => (
-                        <option key={duration} value={duration}>
-                          {duration}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="border-t border-border pt-4 mt-4">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-4">
-                    <h3 className="text-lg font-semibold text-card-foreground">Questions</h3>
-                    <div className="relative w-full sm:w-48 md:w-64">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+        {/* Create/Edit Modal */}
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
+            <div ref={modalRef} className="bg-card rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative border border-border">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-card-foreground">{editingExam ? 'Edit Exam' : 'Create Exam'}</h2>
+                <button 
+                  onClick={handleCloseModal}
+                  className="text-muted-foreground hover:text-card-foreground"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-card-foreground">Exam Name</label>
                       <input
                         type="text"
-                        placeholder="Search questions..."
-                        value={questionSearchQuery}
-                        onChange={(e) => setQuestionSearchQuery(e.target.value)}
-                        className="pl-9 pr-4 py-2 border border-input rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground placeholder-muted-foreground text-sm"
-                      />
-                    </div>
-                  </div>
-                  
-                  {/* Question List */}
-                  <div className="space-y-4 mb-6">
-                    {filteredQuestions(editingExam ? editingExam.questions : newExam.questions).map((question) => (
-                      <div key={question.id} className="bg-muted p-4 rounded-lg relative">
-                        <div className="absolute top-2 right-2 flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleEditQuestion(question)}
-                            className="text-primary hover:text-primary/80"
-                          >
-                            <Edit2 className="h-4 w-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveQuestion(question.id)}
-                            className="text-destructive hover:text-destructive/80"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        </div>
-                        <p className="font-medium text-card-foreground">{question.text}</p>
-                        <p className="text-sm text-muted-foreground mt-1">Marks: {question.marks}</p>
-                        {question.type === 'mcq' && question.options && (
-                          <div className="mt-2 space-y-1">
-                            {question.options.map((option, idx) => (
-                              <div key={idx} className="flex items-center text-card-foreground">
-                                <span className="w-6">{String.fromCharCode(65 + idx)}.</span>
-                                <span>{option}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Add/Edit Question Form */}
-                  <div ref={questionFormRef} className="bg-muted p-4 rounded-lg">
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <label className="block text-sm font-medium text-card-foreground">Question Type</label>
-                        <select
-                          value={currentQuestion.type}
-                          onChange={(e) => setCurrentQuestion({
-                            ...currentQuestion,
-                            type: e.target.value as 'mcq' | 'written'
-                          })}
-                          className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
-                        >
-                          <option value="mcq">Multiple Choice</option>
-                          <option value="written">Written</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-card-foreground">Marks</label>
-                        <input
-                          type="number"
-                          value={currentQuestion.marks}
-                          onChange={(e) => setCurrentQuestion({
-                            ...currentQuestion,
-                            marks: parseInt(e.target.value)
-                          })}
-                          className={`mt-1 block w-full rounded-md border shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 ${
-                            validationErrors.marks ? 'border-destructive' : 'border-input'
-                          }`}
-                          min="1"
-                        />
-                        {validationErrors.marks && (
-                          <p className="mt-1 text-sm text-destructive">{validationErrors.marks}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-card-foreground">Question Text</label>
-                      <textarea
-                        value={currentQuestion.text}
-                        onChange={(e) => setCurrentQuestion({
-                          ...currentQuestion,
-                          text: e.target.value
-                        })}
+                        value={editingExam ? editingExam.name : newExam.name}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          editingExam 
+                            ? setEditingExam({ ...editingExam, name: value })
+                            : setNewExam({ ...newExam, name: value });
+                        }}
                         className={`mt-1 block w-full rounded-md border shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 ${
-                          validationErrors.text ? 'border-destructive' : 'border-input'
+                          formErrors.name ? 'border-destructive' : 'border-input'
                         }`}
-                        rows={3}
+                        required
                       />
-                      {validationErrors.text && (
-                        <p className="mt-1 text-sm text-destructive">{validationErrors.text}</p>
+                      {formErrors.name && (
+                        <p className="mt-1 text-sm text-destructive">{formErrors.name}</p>
                       )}
                     </div>
-                    {currentQuestion.type === 'mcq' && (
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-card-foreground">Options</label>
-                        {currentQuestion.options?.map((option, idx) => (
-                          <div key={idx} className="flex items-center gap-2">
-                            <span className="w-6 text-card-foreground">{String.fromCharCode(65 + idx)}.</span>
-                            <input
-                              type="text"
-                              value={option}
-                              onChange={(e) => {
-                                const newOptions = [...(currentQuestion.options || [])];
-                                newOptions[idx] = e.target.value;
-                                setCurrentQuestion({
-                                  ...currentQuestion,
-                                  options: newOptions
-                                });
-                              }}
-                              className={`flex-1 rounded-md border shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 ${
-                                validationErrors.options ? 'border-destructive' : 'border-input'
-                              }`}
-                              placeholder={`Option ${String.fromCharCode(65 + idx)}`}
-                            />
-                          </div>
+                    <div>
+                      <label className="block text-sm font-medium text-card-foreground">Subject</label>
+                      <input
+                        type="text"
+                        value={editingExam ? editingExam.subject : newExam.subject}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          editingExam
+                            ? setEditingExam({ ...editingExam, subject: value })
+                            : setNewExam({ ...newExam, subject: value });
+                        }}
+                        className={`mt-1 block w-full rounded-md border shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 ${
+                          formErrors.subject ? 'border-destructive' : 'border-input'
+                        }`}
+                        required
+                      />
+                      {formErrors.subject && (
+                        <p className="mt-1 text-sm text-destructive">{formErrors.subject}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-card-foreground">Date</label>
+                      <input
+                        type="date"
+                        value={editingExam ? editingExam.date : newExam.date}
+                        onChange={(e) => editingExam
+                          ? setEditingExam({ ...editingExam, date: e.target.value })
+                          : setNewExam({ ...newExam, date: e.target.value })
+                        }
+                        className={`mt-1 block w-full rounded-md border shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 ${
+                          formErrors.date ? 'border-destructive' : 'border-input'
+                        }`}
+                        required
+                      />
+                      {formErrors.date && (
+                        <p className="mt-1 text-sm text-destructive">{formErrors.date}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-card-foreground">Duration</label>
+                      <select
+                        value={editingExam ? editingExam.duration : newExam.duration}
+                        onChange={(e) => editingExam
+                          ? setEditingExam({ ...editingExam, duration: e.target.value })
+                          : setNewExam({ ...newExam, duration: e.target.value })
+                        }
+                        className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
+                        required
+                      >
+                        {DURATION_OPTIONS.map((duration) => (
+                          <option key={duration} value={duration}>
+                            {duration}
+                          </option>
                         ))}
-                        {validationErrors.options && (
-                          <p className="mt-1 text-sm text-destructive">{validationErrors.options}</p>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-border pt-4 mt-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-4">
+                      <h3 className="text-lg font-semibold text-card-foreground">Questions</h3>
+                      <div className="relative w-full sm:w-48 md:w-64">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                        <input
+                          type="text"
+                          placeholder="Search questions..."
+                          value={questionSearchQuery}
+                          onChange={(e) => setQuestionSearchQuery(e.target.value)}
+                          className="pl-9 pr-4 py-2 border border-input rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground placeholder-muted-foreground text-sm"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Question List */}
+                    <div className="space-y-4 mb-6">
+                      {filteredQuestions(editingExam ? editingExam.questions : newExam.questions).map((question) => (
+                        <div key={question.id} className="bg-muted p-4 rounded-lg relative">
+                          <div className="absolute top-2 right-2 flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleEditQuestion(question)}
+                              className="text-primary hover:text-primary/80"
+                            >
+                              <Edit2 className="h-4 w-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveQuestion(question.id)}
+                              className="text-destructive hover:text-destructive/80"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                          <p className="font-medium text-card-foreground">{question.text}</p>
+                          <p className="text-sm text-muted-foreground mt-1">Marks: {question.marks}</p>
+                          {question.type === 'mcq' && question.options && (
+                            <div className="mt-2 space-y-1">
+                              {question.options.map((option, idx) => (
+                                <div key={idx} className="flex items-center text-card-foreground">
+                                  <span className="w-6">{String.fromCharCode(65 + idx)}.</span>
+                                  <span>{option}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Add/Edit Question Form */}
+                    <div ref={questionFormRef} className="bg-muted p-4 rounded-lg">
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <label className="block text-sm font-medium text-card-foreground">Question Type</label>
+                          <select
+                            value={currentQuestion.type}
+                            onChange={(e) => setCurrentQuestion({
+                              ...currentQuestion,
+                              type: e.target.value as 'mcq' | 'written'
+                            })}
+                            className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
+                          >
+                            <option value="mcq">Multiple Choice</option>
+                            <option value="written">Written</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-card-foreground">Marks</label>
+                          <input
+                            type="number"
+                            value={currentQuestion.marks}
+                            onChange={(e) => setCurrentQuestion({
+                              ...currentQuestion,
+                              marks: parseInt(e.target.value)
+                            })}
+                            className={`mt-1 block w-full rounded-md border shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 ${
+                              validationErrors.marks ? 'border-destructive' : 'border-input'
+                            }`}
+                            min="1"
+                          />
+                          {validationErrors.marks && (
+                            <p className="mt-1 text-sm text-destructive">{validationErrors.marks}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-card-foreground">Question Text</label>
+                        <textarea
+                          value={currentQuestion.text}
+                          onChange={(e) => setCurrentQuestion({
+                            ...currentQuestion,
+                            text: e.target.value
+                          })}
+                          className={`mt-1 block w-full rounded-md border shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 ${
+                            validationErrors.text ? 'border-destructive' : 'border-input'
+                          }`}
+                          rows={3}
+                        />
+                        {validationErrors.text && (
+                          <p className="mt-1 text-sm text-destructive">{validationErrors.text}</p>
                         )}
                       </div>
-                    )}
+                      {currentQuestion.type === 'mcq' && (
+                        <div className="space-y-2">
+                          <label className="block text-sm font-medium text-card-foreground">Options</label>
+                          {currentQuestion.options?.map((option, idx) => (
+                            <div key={idx} className="flex items-center gap-2">
+                              <span className="w-6 text-card-foreground">{String.fromCharCode(65 + idx)}.</span>
+                              <input
+                                type="text"
+                                value={option}
+                                onChange={(e) => {
+                                  const newOptions = [...(currentQuestion.options || [])];
+                                  newOptions[idx] = e.target.value;
+                                  setCurrentQuestion({
+                                    ...currentQuestion,
+                                    options: newOptions
+                                  });
+                                }}
+                                className={`flex-1 rounded-md border shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 ${
+                                  validationErrors.options ? 'border-destructive' : 'border-input'
+                                }`}
+                                placeholder={`Option ${String.fromCharCode(65 + idx)}`}
+                              />
+                            </div>
+                          ))}
+                          {validationErrors.options && (
+                            <p className="mt-1 text-sm text-destructive">{validationErrors.options}</p>
+                          )}
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        onClick={handleAddQuestion}
+                        className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                      >
+                        {editingQuestion ? 'Update Question' : 'Add Question'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-2 mt-6">
                     <button
                       type="button"
-                      onClick={handleAddQuestion}
-                      className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                      onClick={handleCloseModal}
+                      className="px-4 py-2 text-sm font-medium text-muted-foreground bg-secondary hover:bg-secondary/80 rounded-md"
                     >
-                      {editingQuestion ? 'Update Question' : 'Add Question'}
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-md"
+                    >
+                      {editingExam ? 'Save Changes' : 'Create Exam'}
                     </button>
                   </div>
                 </div>
+              </form>
 
-                <div className="flex justify-end gap-2 mt-6">
-                  <button
-                    type="button"
-                    onClick={handleCloseModal}
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground bg-secondary hover:bg-secondary/80 rounded-md"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-md"
-                  >
-                    {editingExam ? 'Save Changes' : 'Create Exam'}
-                  </button>
-                </div>
-              </div>
-            </form>
-
-            {/* Go to Top Button */}
-            <button
-              onClick={scrollToTop}
-              className="fixed bottom-8 right-8 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white p-3 rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 z-50"
-              title="Go to top"
-            >
-              <ArrowUp className="h-5 w-5" />
-            </button>
+              {/* Go to Top Button */}
+              <button
+                onClick={scrollToTop}
+                className="fixed bottom-8 right-8 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white p-3 rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 z-50"
+                title="Go to top"
+              >
+                <ArrowUp className="h-5 w-5" />
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
