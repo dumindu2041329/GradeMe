@@ -92,9 +92,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background">
       {/* Mobile Header */}
-      <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 border-b border-border bg-card">
         <button onClick={toggleSidebar} className="text-foreground">
           <Menu className="h-6 w-6" />
         </button>
@@ -129,7 +129,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex h-screen pt-[60px] lg:pt-0 overflow-hidden">
         {/* Sidebar Overlay */}
         {isSidebarOpen && (
           <div
@@ -140,19 +140,19 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
         {/* Sidebar */}
         <aside className={`
-          fixed top-0 lg:static w-64 h-screen bg-card border-r border-border z-50
-          flex flex-col overflow-hidden
+          fixed lg:sticky top-[60px] lg:top-0 h-[calc(100vh-60px)] lg:h-screen w-64 bg-card border-r border-border z-50
+          flex flex-col
           transform transition-transform duration-300 ease-in-out
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
-          <div className="p-6">
+          <div className="p-6 border-b border-border">
             <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
               <BookOpen className="h-6 w-6" />
               GradeMe
             </h1>
           </div>
           
-          <nav className="flex-1 overflow-y-auto py-4">
+          <nav className="flex-1">
             <Link to="/" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
               <FileSpreadsheet className="h-5 w-5 mr-3" />
               Dashboard
@@ -196,7 +196,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-h-0">
           {/* Desktop Header */}
-          <div className="hidden lg:flex items-center justify-end p-4 border-b border-border bg-card">
+          <div className="hidden lg:flex fixed top-0 right-0 left-64 z-50 items-center justify-end p-4 border-b border-border bg-card">
             <div className="relative" ref={desktopMenuRef}>
               <button
                 onClick={toggleUserMenu}
@@ -226,7 +226,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </div>
           </div>
           
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">{children}</main>
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pt-0 lg:pt-[60px]">{children}</main>
         </div>
       </div>
     </div>
