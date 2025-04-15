@@ -92,7 +92,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Mobile Header */}
       <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card">
         <button onClick={toggleSidebar} className="text-foreground">
@@ -110,7 +110,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <User className="h-5 w-5" />
           </button>
           {isUserMenuOpen && (
-            <div className="absolute right-4 mt-2 w-48 rounded-md shadow-lg bg-card border border-border">
+            <div className="absolute right-4 mt-2 w-48 rounded-md shadow-lg bg-card border border-border z-50">
               <div className="py-2">
                 <div className="px-4 py-2 border-b border-border">
                   <p className="text-sm font-medium text-card-foreground">Admin User</p>
@@ -129,7 +129,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </div>
       </div>
 
-      <div className="flex h-[calc(100vh-56px)] lg:h-screen">
+      <div className="flex flex-1 overflow-hidden">
         {/* Sidebar Overlay */}
         {isSidebarOpen && (
           <div
@@ -140,61 +140,61 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
         {/* Sidebar */}
         <aside className={`
-          fixed lg:sticky top-0 h-screen w-64 bg-card border-r border-border transform transition-transform duration-300 ease-in-out
+          fixed top-0 lg:static w-64 h-screen bg-card border-r border-border z-50
+          flex flex-col overflow-hidden
+          transform transition-transform duration-300 ease-in-out
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
-          <div className="flex flex-col h-full">
-            <div className="p-6 hidden lg:block">
-              <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
-                <BookOpen className="h-6 w-6" />
-                GradeMe
-              </h1>
-            </div>
-            
-            <nav className="flex-1 py-4">
-              <Link to="/" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
-                <FileSpreadsheet className="h-5 w-5 mr-3" />
-                Dashboard
-              </Link>
-              <Link to="/exams" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
-                <BookOpen className="h-5 w-5 mr-3" />
-                Exams
-              </Link>
-              <Link to="/students" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
-                <Users className="h-5 w-5 mr-3" />
-                Students
-              </Link>
-              <Link to="/results" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
-                <FileSpreadsheet className="h-5 w-5 mr-3" />
-                Results
-              </Link>
-            </nav>
+          <div className="p-6">
+            <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
+              <BookOpen className="h-6 w-6" />
+              GradeMe
+            </h1>
+          </div>
+          
+          <nav className="flex-1 overflow-y-auto py-4">
+            <Link to="/" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+              <FileSpreadsheet className="h-5 w-5 mr-3" />
+              Dashboard
+            </Link>
+            <Link to="/exams" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+              <BookOpen className="h-5 w-5 mr-3" />
+              Exams
+            </Link>
+            <Link to="/students" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+              <Users className="h-5 w-5 mr-3" />
+              Students
+            </Link>
+            <Link to="/results" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+              <FileSpreadsheet className="h-5 w-5 mr-3" />
+              Results
+            </Link>
+          </nav>
 
-            <div className="p-4 border-t border-border">
-              <button
-                onClick={toggleTheme}
-                className="flex items-center px-4 py-2 text-muted-foreground hover:text-foreground w-full rounded-md hover:bg-accent mb-2"
-              >
-                {isDark ? (
-                  <Sun className="h-5 w-5 mr-2" />
-                ) : (
-                  <Moon className="h-5 w-5 mr-2" />
-                )}
-                {isDark ? 'Light Mode' : 'Dark Mode'}
-              </button>
-              <button 
-                onClick={handleLogout}
-                className="flex items-center px-4 py-2 text-muted-foreground hover:text-destructive w-full rounded-md hover:bg-accent"
-              >
-                <LogOut className="h-5 w-5 mr-2" />
-                Logout
-              </button>
-            </div>
+          <div className="p-4 border-t border-border mt-auto">
+            <button
+              onClick={toggleTheme}
+              className="flex items-center px-4 py-2 text-muted-foreground hover:text-foreground w-full rounded-md hover:bg-accent mb-2"
+            >
+              {isDark ? (
+                <Sun className="h-5 w-5 mr-2" />
+              ) : (
+                <Moon className="h-5 w-5 mr-2" />
+              )}
+              {isDark ? 'Light Mode' : 'Dark Mode'}
+            </button>
+            <button 
+              onClick={handleLogout}
+              className="flex items-center px-4 py-2 text-muted-foreground hover:text-destructive w-full rounded-md hover:bg-accent"
+            >
+              <LogOut className="h-5 w-5 mr-2" />
+              Logout
+            </button>
           </div>
         </aside>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-auto">
+        <div className="flex-1 flex flex-col min-h-0">
           {/* Desktop Header */}
           <div className="hidden lg:flex items-center justify-end p-4 border-b border-border bg-card">
             <div className="relative" ref={desktopMenuRef}>
@@ -207,7 +207,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               
               {/* User Menu Dropdown */}
               {isUserMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-card border border-border">
+                <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-card border border-border z-50">
                   <div className="py-2">
                     <div className="px-4 py-2 border-b border-border">
                       <p className="text-sm font-medium text-card-foreground">Admin User</p>
@@ -226,7 +226,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </div>
           </div>
           
-          <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">{children}</main>
         </div>
       </div>
     </div>
