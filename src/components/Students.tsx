@@ -70,11 +70,11 @@ const Students = () => {
   return (
     <div className="h-[calc(100vh-60px)] lg:h-[calc(100vh-120px)] overflow-y-auto">
       <div className="px-4 lg:px-8 py-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-foreground">Students</h1>
           <button 
             onClick={handleCreateClick}
-            className="action-button w-full sm:w-auto"
+            className="action-button"
           >
             <Plus className="h-5 w-5" />
             Add Student
