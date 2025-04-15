@@ -129,7 +129,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </div>
       </div>
 
-      <div className="flex min-h-screen">
+      <div className="flex h-[calc(100vh-56px)] lg:h-screen">
         {/* Sidebar Overlay */}
         {isSidebarOpen && (
           <div
@@ -140,57 +140,61 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
         {/* Sidebar */}
         <aside className={`
-          fixed lg:static inset-y-0 left-0 z-50 w-64 bg-card border-r border-border transform transition-transform duration-300 ease-in-out
+          fixed lg:sticky top-0 h-screen w-64 bg-card border-r border-border transform transition-transform duration-300 ease-in-out
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
-          <div className="p-6 hidden lg:block">
-            <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
-              <BookOpen className="h-6 w-6" />
-              GradeMe
-            </h1>
-          </div>
-          <nav className="mt-6">
-            <Link to="/" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
-              <FileSpreadsheet className="h-5 w-5 mr-3" />
-              Dashboard
-            </Link>
-            <Link to="/exams" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
-              <BookOpen className="h-5 w-5 mr-3" />
-              Exams
-            </Link>
-            <Link to="/students" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
-              <Users className="h-5 w-5 mr-3" />
-              Students
-            </Link>
-            <Link to="/results" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
-              <FileSpreadsheet className="h-5 w-5 mr-3" />
-              Results
-            </Link>
-          </nav>
-          <div className="absolute bottom-0 w-64 p-6 space-y-2 border-t border-border">
-            <button
-              onClick={toggleTheme}
-              className="flex items-center px-4 py-2 text-muted-foreground hover:text-foreground w-full rounded-md hover:bg-accent"
-            >
-              {isDark ? (
-                <Sun className="h-5 w-5 mr-2" />
-              ) : (
-                <Moon className="h-5 w-5 mr-2" />
-              )}
-              {isDark ? 'Light Mode' : 'Dark Mode'}
-            </button>
-            <button 
-              onClick={handleLogout}
-              className="flex items-center px-4 py-2 text-muted-foreground hover:text-destructive w-full rounded-md hover:bg-accent"
-            >
-              <LogOut className="h-5 w-5 mr-2" />
-              Logout
-            </button>
+          <div className="flex flex-col h-full">
+            <div className="p-6 hidden lg:block">
+              <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
+                <BookOpen className="h-6 w-6" />
+                GradeMe
+              </h1>
+            </div>
+            
+            <nav className="flex-1 py-4">
+              <Link to="/" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+                <FileSpreadsheet className="h-5 w-5 mr-3" />
+                Dashboard
+              </Link>
+              <Link to="/exams" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+                <BookOpen className="h-5 w-5 mr-3" />
+                Exams
+              </Link>
+              <Link to="/students" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+                <Users className="h-5 w-5 mr-3" />
+                Students
+              </Link>
+              <Link to="/results" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+                <FileSpreadsheet className="h-5 w-5 mr-3" />
+                Results
+              </Link>
+            </nav>
+
+            <div className="p-4 border-t border-border">
+              <button
+                onClick={toggleTheme}
+                className="flex items-center px-4 py-2 text-muted-foreground hover:text-foreground w-full rounded-md hover:bg-accent mb-2"
+              >
+                {isDark ? (
+                  <Sun className="h-5 w-5 mr-2" />
+                ) : (
+                  <Moon className="h-5 w-5 mr-2" />
+                )}
+                {isDark ? 'Light Mode' : 'Dark Mode'}
+              </button>
+              <button 
+                onClick={handleLogout}
+                className="flex items-center px-4 py-2 text-muted-foreground hover:text-destructive w-full rounded-md hover:bg-accent"
+              >
+                <LogOut className="h-5 w-5 mr-2" />
+                Logout
+              </button>
+            </div>
           </div>
         </aside>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col min-h-screen">
+        <div className="flex-1 flex flex-col overflow-auto">
           {/* Desktop Header */}
           <div className="hidden lg:flex items-center justify-end p-4 border-b border-border bg-card">
             <div className="relative" ref={desktopMenuRef}>
