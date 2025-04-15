@@ -61,7 +61,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto mt-6 px-4 lg:px-0">
       <h1 className="text-2xl font-bold mb-8 text-foreground">Profile Settings</h1>
 
       <div className="bg-card rounded-lg shadow-lg border border-border overflow-hidden">

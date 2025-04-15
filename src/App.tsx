@@ -129,7 +129,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </div>
       </div>
 
-      <div className="flex h-screen pt-[60px] lg:pt-0 overflow-hidden">
+      <div className="flex h-screen pt-[60px] lg:pt-0">
         {/* Sidebar Overlay */}
         {isSidebarOpen && (
           <div
@@ -194,7 +194,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </aside>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col min-h-0">
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           {/* Desktop Header */}
           <div className="hidden lg:flex fixed top-0 right-0 left-64 z-50 items-center justify-end p-4 border-b border-border bg-card">
             <div className="relative" ref={desktopMenuRef}>
@@ -226,7 +226,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </div>
           </div>
           
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pt-0 lg:pt-[60px]">{children}</main>
+          <main className="flex-1 lg:pt-[60px]">{children}</main>
         </div>
       </div>
     </div>
