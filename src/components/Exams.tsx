@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Plus, Search, Edit2, Trash2, X, ArrowUp } from 'lucide-react';
+import DeletePrompt from './DeletePrompt';
 
 interface Question {
   id: number;
@@ -68,6 +69,10 @@ const Exams = () => {
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [validationErrors, setValidationErrors] = useState<FormErrors>({});
   const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const [deletePrompt, setDeletePrompt] = useState<{ isOpen: boolean; examId: number | null }>({
+    isOpen: false,
+    examId: null,
+  });
   const [newExam, setNewExam] = useState<Omit<Exam, 'id'>>({
     name: '',
     subject: '',
@@ -161,10 +166,19 @@ const Exams = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: number) => {
-    if (confirm('Are you sure you want to delete this exam?')) {
-      setExams(exams.filter(exam => exam.id !== id));
+  const handleDeleteClick = (id: number) => {
+    setDeletePrompt({ isOpen: true, examId: id });
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deletePrompt.examId !== null) {
+      setExams(exams.filter(exam => exam.id !== deletePrompt.examId));
     }
+    setDeletePrompt({ isOpen: false, examId: null });
+  };
+
+  const handleDeleteCancel = () => {
+    setDeletePrompt({ isOpen: false, examId: null });
   };
 
   const handleEditQuestion = (question: Question) => {
@@ -384,7 +398,7 @@ const Exams = () => {
                           </button>
                           <button 
                             className="text-destructive hover:text-destructive/80"
-                            onClick={() => handleDelete(exam.id)}
+                            onClick={() => handleDeleteClick(exam.id)}
                           >
                             <Trash2 className="h-5 w-5" />
                           </button>
@@ -666,6 +680,14 @@ const Exams = () => {
             </div>
           </div>
         )}
+
+        <DeletePrompt
+          isOpen={deletePrompt.isOpen}
+          title="Delete Exam"
+          message="Are you sure you want to delete this exam? This action cannot be undone and will remove all associated questions."
+          onConfirm={handleDeleteConfirm}
+          onCancel={handleDeleteCancel}
+        />
       </div>
     </div>
   );

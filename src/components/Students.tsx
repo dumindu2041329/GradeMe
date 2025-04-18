@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Search, Edit2, Trash2, X } from 'lucide-react';
+import DeletePrompt from './DeletePrompt';
 
 interface Student {
   id: number;
@@ -19,6 +20,10 @@ const Students = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+  const [deletePrompt, setDeletePrompt] = useState<{ isOpen: boolean; studentId: number | null }>({
+    isOpen: false,
+    studentId: null,
+  });
   const [newStudent, setNewStudent] = useState<Omit<Student, 'id'>>({
     name: '',
     email: '',
@@ -37,10 +42,19 @@ const Students = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: number) => {
-    if (confirm('Are you sure you want to delete this student?')) {
-      setStudents(students.filter(student => student.id !== id));
+  const handleDeleteClick = (id: number) => {
+    setDeletePrompt({ isOpen: true, studentId: id });
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deletePrompt.studentId !== null) {
+      setStudents(students.filter(student => student.id !== deletePrompt.studentId));
     }
+    setDeletePrompt({ isOpen: false, studentId: null });
+  };
+
+  const handleDeleteCancel = () => {
+    setDeletePrompt({ isOpen: false, studentId: null });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -124,7 +138,7 @@ const Students = () => {
                           </button>
                           <button 
                             className="text-destructive hover:text-destructive/80"
-                            onClick={() => handleDelete(student.id)}
+                            onClick={() => handleDeleteClick(student.id)}
                           >
                             <Trash2 className="h-5 w-5" />
                           </button>
@@ -224,6 +238,14 @@ const Students = () => {
             </div>
           </div>
         )}
+
+        <DeletePrompt
+          isOpen={deletePrompt.isOpen}
+          title="Delete Student"
+          message="Are you sure you want to delete this student? This action cannot be undone."
+          onConfirm={handleDeleteConfirm}
+          onCancel={handleDeleteCancel}
+        />
       </div>
     </div>
   );

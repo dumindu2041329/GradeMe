@@ -105,6 +105,48 @@
   .dropdown-menu {
     @apply absolute z-[9998] mt-2 w-48 rounded-md shadow-lg bg-card border border-border;
   }
+
+  .delete-prompt {
+    @apply fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-[99999];
+  }
+
+  .delete-prompt-content {
+    @apply bg-gradient-to-br from-white via-white to-red-50 dark:from-gray-900 dark:via-gray-900 dark:to-red-950
+           p-6 rounded-xl shadow-2xl border-2 border-red-100 dark:border-red-900
+           backdrop-blur-xl backdrop-saturate-150
+           animate-modal-appear
+           max-w-md w-full mx-4
+           relative;
+  }
+
+  .delete-prompt-icon {
+    @apply absolute -top-12 left-1/2 -translate-x-1/2
+           w-24 h-24 rounded-full
+           bg-gradient-to-br from-red-500 to-red-600
+           flex items-center justify-center
+           border-4 border-white dark:border-gray-900
+           shadow-xl;
+  }
+
+  .delete-prompt-button {
+    @apply px-4 py-2 rounded-lg font-medium
+           transform transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .delete-prompt-cancel {
+    @apply bg-secondary text-secondary-foreground
+           hover:bg-secondary/80
+           focus:ring-gray-500;
+  }
+
+  .delete-prompt-confirm {
+    @apply bg-gradient-to-r from-red-500 to-red-600
+           text-white
+           hover:brightness-110
+           focus:ring-red-500;
+  }
 }
 
 @keyframes modalAppear {
