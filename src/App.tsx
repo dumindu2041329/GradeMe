@@ -145,13 +145,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           transform transition-transform duration-300 ease-in-out
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
-          <div className="p-6 border-b border-border">
-            <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
-              <BookOpen className="h-6 w-6" />
-              GradeMe
-            </h1>
-          </div>
-          
           <nav className="flex-1">
             <Link to="/" onClick={closeSidebar} className="flex items-center px-6 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
               <FileSpreadsheet className="h-5 w-5 mr-3" />

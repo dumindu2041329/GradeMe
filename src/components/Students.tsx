@@ -139,8 +139,8 @@ const Students = () => {
         </div>
 
         {isModalOpen && (
-          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
-            <div className="bg-card rounded-lg p-6 w-full max-w-md border border-border">
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-[99999]">
+            <div className="bg-card rounded-lg p-6 w-full max-w-md mx-8 border border-border relative z-[100000]">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold text-card-foreground">{editingStudent ? 'Edit Student' : 'Add Student'}</h2>
                 <button 

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, X, ArrowUp } from 'lucide-react';
 
 interface Question {
@@ -40,6 +40,7 @@ const DURATION_OPTIONS = [
 const Exams = () => {
   const modalRef = useRef<HTMLDivElement>(null);
   const questionFormRef = useRef<HTMLDivElement>(null);
+  const [showScrollButton, setShowScrollButton] = useState(false);
   const [exams, setExams] = useState<Exam[]>([
     {
       id: 1,
@@ -81,6 +82,18 @@ const Exams = () => {
     options: ['', '', '', ''],
     marks: 1
   });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (modalRef.current) {
+        const scrollTop = modalRef.current.scrollTop;
+        setShowScrollButton(scrollTop > 100);
+      }
+    };
+
+    modalRef.current?.addEventListener('scroll', handleScroll);
+    return () => modalRef.current?.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const validateExamForm = () => {
     const errors: FormErrors = {};
@@ -662,7 +675,10 @@ const Exams = () => {
               {/* Go to Top Button */}
               <button
                 onClick={scrollToTop}
-                className="fixed bottom-8 right-8 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white p-3 rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 z-50"
+                className={`fixed bottom-8 right-8 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
+                  text-white p-3 rounded-full shadow-lg hover:shadow-xl hover:scale-110 
+                  transition-all duration-300 z-50
+                  ${showScrollButton ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
                 title="Go to top"
               >
                 <ArrowUp className="h-5 w-5" />
@@ -676,3 +692,5 @@ const Exams = () => {
 };
 
 export default Exams;
+
+export default Exams
