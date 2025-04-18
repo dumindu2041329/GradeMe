@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Plus, Search, Edit2, Trash2, X, ArrowUp } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, X } from 'lucide-react';
 import DeletePrompt from './DeletePrompt';
 
 interface Question {
@@ -41,7 +41,6 @@ const DURATION_OPTIONS = [
 const Exams = () => {
   const modalRef = useRef<HTMLDivElement>(null);
   const questionFormRef = useRef<HTMLDivElement>(null);
-  const [showScrollButton, setShowScrollButton] = useState(true);
   const [exams, setExams] = useState<Exam[]>([
     {
       id: 1,
@@ -666,17 +665,6 @@ const Exams = () => {
                   </div>
                 </div>
               </form>
-
-              {/* Go to Top Button */}
-              <button
-                className={`fixed bottom-8 right-8 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
-                  text-white p-3 rounded-full shadow-lg hover:shadow-xl hover:scale-110 
-                  transition-all duration-300 z-[9999]
-                  ${showScrollButton ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
-                title="Go to top"
-              >
-                <ArrowUp className="h-5 w-5" />
-              </button>
             </div>
           </div>
         )}
