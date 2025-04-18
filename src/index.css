@@ -75,7 +75,8 @@
     @apply bg-gradient-to-br from-white via-white to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-indigo-950
            p-6 rounded-xl shadow-2xl border-2 border-indigo-100 dark:border-indigo-900
            backdrop-blur-xl backdrop-saturate-150
-           animate-modal-appear;
+           animate-modal-appear
+           z-[10000];
   }
 
   .form-input {
@@ -94,15 +95,15 @@
   }
 
   .modal-overlay {
-    @apply fixed inset-0 bg-background/80 backdrop-blur-sm z-50;
+    @apply fixed inset-0 bg-background/80 backdrop-blur-sm z-[9999];
   }
 
   .modal-container {
-    @apply fixed inset-0 flex items-center justify-center z-50;
+    @apply fixed inset-0 flex items-center justify-center z-[9999];
   }
 
   .dropdown-menu {
-    @apply absolute z-[60] mt-2 w-48 rounded-md shadow-lg bg-card border border-border;
+    @apply absolute z-[9998] mt-2 w-48 rounded-md shadow-lg bg-card border border-border;
   }
 }
 

@@ -406,8 +406,8 @@ const Exams = () => {
 
         {/* Create/Edit Modal */}
         {isModalOpen && (
-          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
-            <div ref={modalRef} className="bg-card rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative border border-border">
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-[9999]">
+            <div ref={modalRef} className="bg-card rounded-lg p-6 w-full max-w-4xl mx-8 max-h-[90vh] overflow-y-auto relative border border-border z-[10000]">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold text-card-foreground">{editingExam ? 'Edit Exam' : 'Create Exam'}</h2>
                 <button 
