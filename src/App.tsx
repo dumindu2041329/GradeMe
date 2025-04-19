@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Link, Navigate, useNavigate } f
 import { BookOpen, Users, FileSpreadsheet, Settings, LogOut, Sun, Moon, Menu, X, User } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import Exams from './components/Exams';
+import ExamForm from './components/ExamForm';
 import Students from './components/Students';
+import StudentForm from './components/StudentForm';
 import Results from './components/Results';
 import Profile from './components/Profile';
 import Login from './components/Login';
@@ -257,11 +259,51 @@ function App() {
             }
           />
           <Route
+            path="/exams/new"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <ExamForm />
+                </Layout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/exams/:id/edit"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <ExamForm />
+                </Layout>
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/students"
             element={
               <PrivateRoute>
                 <Layout>
                   <Students />
+                </Layout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/students/new"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <StudentForm />
+                </Layout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/students/:id/edit"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <StudentForm />
                 </Layout>
               </PrivateRoute>
             }
