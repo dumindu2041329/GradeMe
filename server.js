@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import examRoutes from './src/routes/examRoutes.js';
+import studentRoutes from './src/routes/studentRoutes.js';
+import resultRoutes from './src/routes/resultRoutes.js';
 
 dotenv.config();
 
@@ -11,17 +14,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Routes
+app.use('/api/exams', examRoutes);
+app.use('/api/students', studentRoutes);
+app.use('/api/results', resultRoutes);
+
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/grademe';
 
 mongoose.connect(MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
-
-// Routes
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to GradeMe API' });
-});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
