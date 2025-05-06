@@ -1,33 +1,36 @@
 import React, { useState } from 'react';
 import { Search, Download } from 'lucide-react';
+import { useQuery } from 'react-query';
+import { resultAPI } from '../services/api';
 
 interface Result {
-  id: number;
-  student: string;
-  exam: string;
+  _id: string;
+  student: {
+    name: string;
+  };
+  exam: {
+    name: string;
+  };
   score: number;
-  grade: string;
-  date: string;
+  submittedAt: string;
 }
 
 const Results = () => {
-  const [results] = useState<Result[]>([
-    { id: 1, student: 'John Doe', exam: 'Mathematics Final', score: 92, grade: 'A', date: '2024-03-20' },
-    { id: 2, student: 'Jane Smith', exam: 'Physics Mid-term', score: 88, grade: 'B+', date: '2024-03-15' },
-    { id: 3, student: 'Mike Johnson', exam: 'Chemistry Quiz', score: 95, grade: 'A', date: '2024-03-10' },
-  ]);
-
   const [searchQuery, setSearchQuery] = useState('');
+
+  const { data: results = [], isLoading } = useQuery('results', async () => {
+    const response = await resultAPI.getAll();
+    return response.data;
+  });
 
   const handleExport = () => {
     const csvContent = [
-      ['Student', 'Exam', 'Score', 'Grade', 'Date'],
-      ...results.map(result => [
-        result.student,
-        result.exam,
+      ['Student', 'Exam', 'Score', 'Date'],
+      ...results.map((result: Result) => [
+        result.student.name,
+        result.exam.name,
         result.score.toString(),
-        result.grade,
-        result.date
+        new Date(result.submittedAt).toLocaleDateString()
       ])
     ].map(row => row.join(',')).join('\n');
 
@@ -42,16 +45,23 @@ const Results = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  const filteredResults = results.filter(result => {
+  const filteredResults = results.filter((result: Result) => {
     const searchTerm = searchQuery.toLowerCase();
     return (
-      result.student.toLowerCase().includes(searchTerm) ||
-      result.exam.toLowerCase().includes(searchTerm) ||
-      result.grade.toLowerCase().includes(searchTerm) ||
+      result.student.name.toLowerCase().includes(searchTerm) ||
+      result.exam.name.toLowerCase().includes(searchTerm) ||
       result.score.toString().includes(searchTerm) ||
-      result.date.includes(searchTerm)
+      new Date(result.submittedAt).toLocaleDateString().includes(searchTerm)
     );
   });
+
+  if (isLoading) {
+    return (
+      <div className="h-[calc(100vh-60px)] lg:h-[calc(100vh-120px)] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-[calc(100vh-60px)] lg:h-[calc(100vh-120px)] overflow-y-auto">
@@ -89,26 +99,22 @@ const Results = () => {
                     <th className="text-left py-3 px-4 text-muted-foreground">Student</th>
                     <th className="text-left py-3 px-4 text-muted-foreground">Exam</th>
                     <th className="text-left py-3 px-4 text-muted-foreground">Score</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground">Grade</th>
                     <th className="text-left py-3 px-4 text-muted-foreground">Date</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredResults.map((result) => (
-                    <tr key={result.id} className="border-b border-border">
-                      <td className="py-3 px-4 text-card-foreground">{result.student}</td>
-                      <td className="py-3 px-4 text-card-foreground">{result.exam}</td>
-                      <td className="py-3 px-4 text-card-foreground">{result.score}</td>
+                  {filteredResults.map((result: Result) => (
+                    <tr key={result._id} className="border-b border-border">
+                      <td className="py-3 px-4 text-card-foreground">{result.student.name}</td>
+                      <td className="py-3 px-4 text-card-foreground">{result.exam.name}</td>
                       <td className="py-3 px-4">
-                        <span className={`px-2 py-1 rounded-full text-sm ${
-                          result.grade.startsWith('A') ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' :
-                          result.grade.startsWith('B') ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100' :
-                          'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'
-                        }`}>
-                          {result.grade}
+                        <span className="px-2 py-1 rounded-full text-sm bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
+                          {result.score}%
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-muted-foreground">{result.date}</td>
+                      <td className="py-3 px-4 text-muted-foreground">
+                        {new Date(result.submittedAt).toLocaleDateString()}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

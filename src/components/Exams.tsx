@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Edit2, Trash2 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { examAPI } from '../services/api';
 import DeletePrompt from './DeletePrompt';
 
 interface Question {
@@ -12,7 +14,7 @@ interface Question {
 }
 
 interface Exam {
-  id: number;
+  _id: string;
   name: string;
   subject: string;
   date: string;
@@ -23,39 +25,34 @@ interface Exam {
 
 const Exams = () => {
   const navigate = useNavigate();
-  const [exams, setExams] = useState<Exam[]>([
-    {
-      id: 1,
-      name: 'Mathematics Final',
-      subject: 'Mathematics',
-      date: '2024-03-20',
-      duration: '3 hours',
-      questions: [
-        {
-          id: 1,
-          text: 'What is 2 + 2?',
-          type: 'mcq',
-          options: ['3', '4', '5', '6'],
-          marks: 1
-        }
-      ],
-      totalMarks: 1
-    }
-  ]);
-
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
-  const [deletePrompt, setDeletePrompt] = useState<{ isOpen: boolean; examId: number | null }>({
+  const [deletePrompt, setDeletePrompt] = useState<{ isOpen: boolean; examId: string | null }>({
     isOpen: false,
     examId: null,
   });
 
-  const handleDeleteClick = (id: number) => {
+  const { data: exams = [], isLoading } = useQuery('exams', async () => {
+    const response = await examAPI.getAll();
+    return response.data;
+  });
+
+  const deleteMutation = useMutation(
+    (id: string) => examAPI.delete(id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('exams');
+      }
+    }
+  );
+
+  const handleDeleteClick = (id: string) => {
     setDeletePrompt({ isOpen: true, examId: id });
   };
 
-  const handleDeleteConfirm = () => {
-    if (deletePrompt.examId !== null) {
-      setExams(exams.filter(exam => exam.id !== deletePrompt.examId));
+  const handleDeleteConfirm = async () => {
+    if (deletePrompt.examId) {
+      await deleteMutation.mutateAsync(deletePrompt.examId);
     }
     setDeletePrompt({ isOpen: false, examId: null });
   };
@@ -64,7 +61,7 @@ const Exams = () => {
     setDeletePrompt({ isOpen: false, examId: null });
   };
 
-  const filteredExams = exams.filter(exam => {
+  const filteredExams = exams.filter((exam: Exam) => {
     const searchTerm = searchQuery.toLowerCase();
     return (
       exam.name.toLowerCase().includes(searchTerm) ||
@@ -73,6 +70,14 @@ const Exams = () => {
       exam.duration.toLowerCase().includes(searchTerm)
     );
   });
+
+  if (isLoading) {
+    return (
+      <div className="h-[calc(100vh-60px)] lg:h-[calc(100vh-120px)] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-[calc(100vh-60px)] lg:h-[calc(100vh-120px)] overflow-y-auto">
@@ -116,24 +121,26 @@ const Exams = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredExams.map((exam) => (
-                    <tr key={exam.id} className="border-b border-border">
+                  {filteredExams.map((exam: Exam) => (
+                    <tr key={exam._id} className="border-b border-border">
                       <td className="py-3 px-4 text-card-foreground">{exam.name}</td>
                       <td className="py-3 px-4 text-card-foreground">{exam.subject}</td>
-                      <td className="py-3 px-4 text-muted-foreground">{exam.date}</td>
+                      <td className="py-3 px-4 text-muted-foreground">
+                        {new Date(exam.date).toLocaleDateString()}
+                      </td>
                       <td className="py-3 px-4 text-muted-foreground">{exam.duration}</td>
                       <td className="py-3 px-4 text-primary font-semibold">{exam.totalMarks}</td>
                       <td className="py-3 px-4">
                         <div className="flex gap-2">
                           <button 
                             className="text-primary hover:text-primary/80"
-                            onClick={() => navigate(`/exams/${exam.id}/edit`)}
+                            onClick={() => navigate(`/exams/${exam._id}/edit`)}
                           >
                             <Edit2 className="h-5 w-5" />
                           </button>
                           <button 
                             className="text-destructive hover:text-destructive/80"
-                            onClick={() => handleDeleteClick(exam.id)}
+                            onClick={() => handleDeleteClick(exam._id)}
                           >
                             <Trash2 className="h-5 w-5" />
                           </button>

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Edit2, Trash2 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { studentAPI } from '../services/api';
 import DeletePrompt from './DeletePrompt';
 
 interface Student {
-  id: number;
+  _id: string;
   name: string;
   email: string;
   class: string;
@@ -13,25 +15,34 @@ interface Student {
 
 const Students = () => {
   const navigate = useNavigate();
-  const [students, setStudents] = useState<Student[]>([
-    { id: 1, name: 'John Doe', email: 'john@example.com', class: '12A', enrollmentDate: '2023-09-01' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', class: '12B', enrollmentDate: '2023-09-01' },
-    { id: 3, name: 'Mike Johnson', email: 'mike@example.com', class: '12A', enrollmentDate: '2023-09-01' },
-  ]);
-
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
-  const [deletePrompt, setDeletePrompt] = useState<{ isOpen: boolean; studentId: number | null }>({
+  const [deletePrompt, setDeletePrompt] = useState<{ isOpen: boolean; studentId: string | null }>({
     isOpen: false,
     studentId: null,
   });
 
-  const handleDeleteClick = (id: number) => {
+  const { data: students = [], isLoading } = useQuery('students', async () => {
+    const response = await studentAPI.getAll();
+    return response.data;
+  });
+
+  const deleteMutation = useMutation(
+    (id: string) => studentAPI.delete(id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('students');
+      }
+    }
+  );
+
+  const handleDeleteClick = (id: string) => {
     setDeletePrompt({ isOpen: true, studentId: id });
   };
 
-  const handleDeleteConfirm = () => {
-    if (deletePrompt.studentId !== null) {
-      setStudents(students.filter(student => student.id !== deletePrompt.studentId));
+  const handleDeleteConfirm = async () => {
+    if (deletePrompt.studentId) {
+      await deleteMutation.mutateAsync(deletePrompt.studentId);
     }
     setDeletePrompt({ isOpen: false, studentId: null });
   };
@@ -40,7 +51,7 @@ const Students = () => {
     setDeletePrompt({ isOpen: false, studentId: null });
   };
 
-  const filteredStudents = students.filter(student => {
+  const filteredStudents = students.filter((student: Student) => {
     const searchTerm = searchQuery.toLowerCase();
     return (
       student.name.toLowerCase().includes(searchTerm) ||
@@ -49,6 +60,14 @@ const Students = () => {
       student.enrollmentDate.includes(searchTerm)
     );
   });
+
+  if (isLoading) {
+    return (
+      <div className="h-[calc(100vh-60px)] lg:h-[calc(100vh-120px)] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-[calc(100vh-60px)] lg:h-[calc(100vh-120px)] overflow-y-auto">
@@ -91,23 +110,25 @@ const Students = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredStudents.map((student) => (
-                    <tr key={student.id} className="border-b border-border">
+                  {filteredStudents.map((student: Student) => (
+                    <tr key={student._id} className="border-b border-border">
                       <td className="py-3 px-4 text-card-foreground">{student.name}</td>
                       <td className="py-3 px-4 text-card-foreground">{student.email}</td>
                       <td className="py-3 px-4 text-card-foreground">{student.class}</td>
-                      <td className="py-3 px-4 text-muted-foreground">{student.enrollmentDate}</td>
+                      <td className="py-3 px-4 text-muted-foreground">
+                        {new Date(student.enrollmentDate).toLocaleDateString()}
+                      </td>
                       <td className="py-3 px-4">
                         <div className="flex gap-2">
                           <button 
                             className="text-primary hover:text-primary/80"
-                            onClick={() => navigate(`/students/${student.id}/edit`)}
+                            onClick={() => navigate(`/students/${student._id}/edit`)}
                           >
                             <Edit2 className="h-5 w-5" />
                           </button>
                           <button 
                             className="text-destructive hover:text-destructive/80"
-                            onClick={() => handleDeleteClick(student.id)}
+                            onClick={() => handleDeleteClick(student._id)}
                           >
                             <Trash2 className="h-5 w-5" />
                           </button>
