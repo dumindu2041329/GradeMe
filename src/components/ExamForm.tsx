@@ -186,12 +186,31 @@ const ExamForm = () => {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateExamForm()) return;
     
-    // In a real app, save to API
-    navigate('/exams');
+    try {
+      const examData = {
+        name: exam.name,
+        subject: exam.subject,
+        date: exam.date,
+        duration: exam.duration,
+        questions: exam.questions,
+        totalMarks: exam.totalMarks
+      };
+
+      if (id) {
+        await examAPI.update(id, examData);
+      } else {
+        await examAPI.create(examData);
+      }
+      
+      navigate('/exams');
+    } catch (error) {
+      console.error('Error saving exam:', error);
+      alert('Failed to save exam. Please try again.');
+    }
   };
 
   const handleAddQuestion = () => {

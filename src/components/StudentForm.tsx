@@ -35,10 +35,29 @@ const StudentForm = () => {
     }
   }, [id]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, save to API
-    navigate('/students');
+    
+    try {
+      const studentData = {
+        name: student.name,
+        email: student.email,
+        class: student.class,
+        enrollmentDate: student.enrollmentDate,
+        password: 'defaultPassword123' // In a real app, this would be handled properly
+      };
+
+      if (id) {
+        await studentAPI.update(id, studentData);
+      } else {
+        await studentAPI.create(studentData);
+      }
+      
+      navigate('/students');
+    } catch (error) {
+      console.error('Error saving student:', error);
+      alert('Failed to save student. Please try again.');
+    }
   };
 
   return (
