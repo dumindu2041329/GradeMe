@@ -1,16 +1,27 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Eye, EyeOff } from 'lucide-react';
+import { Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { auth } from '../lib/auth';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
+
+  const validateEmail = (email: string) => {
+    if (!email.trim()) {
+      return 'Email is required';
+    }
+    if (!email.includes('@')) {
+      return 'Please enter a valid email address';
+    }
+    return null;
+  };
 
   const validateForm = () => {
     if (!email.trim()) {
@@ -21,13 +32,15 @@ const Login = () => {
       setError('Please enter a valid email address');
       return false;
     }
-    if (!password.trim()) {
-      setError('Password is required');
-      return false;
-    }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return false;
+    if (!isForgotPassword) {
+      if (!password.trim()) {
+        setError('Password is required');
+        return false;
+      }
+      if (password.length < 6) {
+        setError('Password must be at least 6 characters long');
+        return false;
+      }
     }
     return true;
   };
@@ -41,18 +54,21 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const { user, error } = isLogin 
-        ? await auth.signIn(email, password)
-        : await auth.signUp(email, password);
+      if (isForgotPassword) {
+        const { success, error } = await auth.resetPassword(email);
+        if (error) throw error;
+        setResetEmailSent(true);
+      } else {
+        const { user, error } = await auth.signIn(email, password);
+        if (error) throw error;
+        if (!user) throw new Error('Authentication failed');
 
-      if (error) throw error;
-      if (!user) throw new Error('Authentication failed');
+        // Store auth state
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('userRole', user.role);
 
-      // Store auth state
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userRole', user.role);
-
-      navigate(user.role === 'admin' ? '/' : '/student', { replace: true });
+        navigate(user.role === 'admin' ? '/' : '/student', { replace: true });
+      }
     } catch (error: any) {
       console.error('Auth error:', error);
       setError(error.message || 'Authentication failed. Please try again.');
@@ -60,6 +76,37 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  if (resetEmailSent) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col justify-center px-4 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+          <div className="bg-card py-8 px-4 shadow-xl rounded-lg sm:px-10 border border-border">
+            <div className="text-center">
+              <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <Lock className="h-6 w-6 text-primary" />
+              </div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">Check your email</h2>
+              <p className="text-muted-foreground mb-6">
+                We've sent password reset instructions to {email}
+              </p>
+              <button
+                onClick={() => {
+                  setIsForgotPassword(false);
+                  setResetEmailSent(false);
+                  setEmail('');
+                }}
+                className="text-primary hover:text-primary/90 flex items-center justify-center gap-2 mx-auto"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to login
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col justify-center px-4 sm:px-6 lg:px-8">
@@ -70,7 +117,7 @@ const Login = () => {
           </div>
         </div>
         <h2 className="mt-6 text-center text-2xl sm:text-3xl font-extrabold text-foreground">
-          {isLogin ? 'Sign in to your account' : 'Create your account'}
+          {isForgotPassword ? 'Reset your password' : 'Sign in to your account'}
         </h2>
       </div>
 
@@ -95,34 +142,36 @@ const Login = () => {
               </div>
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-card-foreground">
-                Password
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete={isLogin ? 'current-password' : 'new-password'}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-input rounded-md shadow-sm placeholder-muted-foreground focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
+            {!isForgotPassword && (
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-card-foreground">
+                  Password
+                </label>
+                <div className="mt-1 relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="appearance-none block w-full px-3 py-2 border border-input rounded-md shadow-sm placeholder-muted-foreground focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             {error && (
               <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
@@ -142,10 +191,10 @@ const Login = () => {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    {isLogin ? 'Signing in...' : 'Creating account...'}
+                    {isForgotPassword ? 'Sending reset link...' : 'Signing in...'}
                   </div>
                 ) : (
-                  isLogin ? 'Sign in' : 'Create account'
+                  isForgotPassword ? 'Send reset link' : 'Sign in'
                 )}
               </button>
             </div>
@@ -154,12 +203,12 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setIsLogin(!isLogin);
+                  setIsForgotPassword(!isForgotPassword);
                   setError(null);
                 }}
                 className="text-primary hover:text-primary/90"
               >
-                {isLogin ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
+                {isForgotPassword ? 'Back to login' : 'Forgot your password?'}
               </button>
             </div>
           </form>
