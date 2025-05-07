@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { studentAPI } from '../services/api';
+import { useMutation, useQueryClient, useQuery } from 'react-query';
 
 interface Student {
   id: number;
@@ -14,6 +15,7 @@ interface Student {
 const StudentForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const queryClient = useQueryClient();
   const [student, setStudent] = useState<Student>({
     id: 0,
     name: '',
@@ -22,19 +24,39 @@ const StudentForm = () => {
     enrollmentDate: ''
   });
 
-  useEffect(() => {
-    if (id) {
-      // In a real app, fetch student data from API
-      const mockStudent: Student = {
-        id: 1,
-        name: 'John Doe',
-        email: 'john@example.com',
-        class: '12A',
-        enrollmentDate: '2023-09-01'
-      };
-      setStudent(mockStudent);
+  const { data: existingStudent } = useQuery(
+    ['student', id],
+    () => studentAPI.getById(id!),
+    {
+      enabled: !!id,
+      onSuccess: (data) => {
+        if (data) {
+          setStudent(data);
+        }
+      }
     }
-  }, [id]);
+  );
+
+  const createMutation = useMutation(
+    (data: any) => studentAPI.create(data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('students');
+        navigate('/students');
+      }
+    }
+  );
+
+  const updateMutation = useMutation(
+    (data: any) => studentAPI.update(id!, data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('students');
+        queryClient.invalidateQueries(['student', id]);
+        navigate('/students');
+      }
+    }
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,12 +71,10 @@ const StudentForm = () => {
       };
 
       if (id) {
-        await studentAPI.update(id, studentData);
+        await updateMutation.mutateAsync(studentData);
       } else {
-        await studentAPI.create(studentData);
+        await createMutation.mutateAsync(studentData);
       }
-      
-      navigate('/students');
     } catch (error) {
       console.error('Error saving student:', error);
       alert('Failed to save student. Please try again.');

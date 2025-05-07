@@ -22,9 +22,8 @@ const Students = () => {
     studentId: null,
   });
 
-  const { data: students = [], isLoading } = useQuery('students', async () => {
-    const response = await studentAPI.getAll();
-    return response.data;
+  const { data: students = [], isLoading } = useQuery('students', studentAPI.getAll, {
+    refetchInterval: 5000, // Poll every 5 seconds
   });
 
   const deleteMutation = useMutation(
