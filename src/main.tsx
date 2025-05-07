@@ -11,7 +11,9 @@ const queryClient = new QueryClient({
       refetchOnMount: true,
       refetchOnReconnect: true,
       retry: 1,
-      staleTime: 5000,
+      staleTime: 1000,
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+      refetchInterval: 3000, // Poll every 3 seconds
     },
   },
 });
