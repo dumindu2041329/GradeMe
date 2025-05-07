@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Search, Edit, Trash, AlertTriangle } from 'lucide-react';
+import { examAPI } from '../services/api';
 
 interface Question {
   id: number;
