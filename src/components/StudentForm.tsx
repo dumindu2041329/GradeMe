@@ -5,81 +5,139 @@ import { studentAPI } from '../services/api';
 import { useMutation, useQueryClient, useQuery } from 'react-query';
 
 interface Student {
-  id: number;
+  _id?: string;
   name: string;
   email: string;
   class: string;
   enrollmentDate: string;
+  password?: string;
+}
+
+interface FormErrors {
+  name?: string;
+  email?: string;
+  class?: string;
+  enrollmentDate?: string;
+  password?: string;
 }
 
 const StudentForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const queryClient = useQueryClient();
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [student, setStudent] = useState<Student>({
-    id: 0,
     name: '',
     email: '',
     class: '',
-    enrollmentDate: ''
+    enrollmentDate: new Date().toISOString().split('T')[0],
+    password: ''
   });
 
-  const { data: existingStudent } = useQuery(
+  const { data: existingStudent, isLoading: isLoadingStudent } = useQuery(
     ['student', id],
     () => studentAPI.getById(id!),
     {
       enabled: !!id,
       onSuccess: (data) => {
         if (data) {
-          setStudent(data);
+          // Remove password from existing student data
+          const { password, ...studentData } = data;
+          setStudent(studentData);
         }
       }
     }
   );
 
   const createMutation = useMutation(
-    (data: any) => studentAPI.create(data),
+    (data: Student) => studentAPI.create(data),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('students');
         navigate('/students');
+      },
+      onError: (error: any) => {
+        alert(error.message || 'Failed to create student');
       }
     }
   );
 
   const updateMutation = useMutation(
-    (data: any) => studentAPI.update(id!, data),
+    (data: Student) => studentAPI.update(id!, data),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('students');
         queryClient.invalidateQueries(['student', id]);
         navigate('/students');
+      },
+      onError: (error: any) => {
+        alert(error.message || 'Failed to update student');
       }
     }
   );
 
+  const validateForm = (): boolean => {
+    const errors: FormErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!student.name.trim()) {
+      errors.name = 'Name is required';
+    }
+
+    if (!student.email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!emailRegex.test(student.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+
+    if (!student.class.trim()) {
+      errors.class = 'Class is required';
+    }
+
+    if (!student.enrollmentDate) {
+      errors.enrollmentDate = 'Enrollment date is required';
+    }
+
+    if (!id && !student.password) {
+      errors.password = 'Password is required for new students';
+    } else if (!id && student.password && student.password.length < 6) {
+      errors.password = 'Password must be at least 6 characters long';
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    try {
-      const studentData = {
-        name: student.name,
-        email: student.email,
-        class: student.class,
-        enrollmentDate: student.enrollmentDate,
-        password: 'defaultPassword123' // In a real app, this would be handled properly
-      };
+    if (!validateForm()) {
+      return;
+    }
 
+    try {
       if (id) {
-        await updateMutation.mutateAsync(studentData);
+        // If updating, only include password if it's been changed
+        const updateData = {
+          ...student,
+          password: student.password || undefined
+        };
+        await updateMutation.mutateAsync(updateData);
       } else {
-        await createMutation.mutateAsync(studentData);
+        await createMutation.mutateAsync(student);
       }
     } catch (error) {
       console.error('Error saving student:', error);
-      alert('Failed to save student. Please try again.');
     }
   };
+
+  if (isLoadingStudent) {
+    return (
+      <div className="h-[calc(100vh-60px)] lg:h-[calc(100vh-120px)] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-[calc(100vh-60px)] lg:h-[calc(100vh-120px)] overflow-y-auto">
@@ -99,45 +157,91 @@ const StudentForm = () => {
         <div className="max-w-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-card-foreground">Name</label>
+              <label className="block text-sm font-medium text-card-foreground mb-1">
+                Name
+              </label>
               <input
                 type="text"
                 value={student.name}
                 onChange={(e) => setStudent({ ...student, name: e.target.value })}
-                className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
-                required
+                className={`mt-1 block w-full rounded-md shadow-sm focus:ring-primary focus:border-primary bg-background text-foreground px-3 py-2 ${
+                  formErrors.name ? 'border-destructive' : 'border-input'
+                }`}
               />
+              {formErrors.name && (
+                <p className="mt-1 text-sm text-destructive">{formErrors.name}</p>
+              )}
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-card-foreground">Email</label>
+              <label className="block text-sm font-medium text-card-foreground mb-1">
+                Email
+              </label>
               <input
                 type="email"
                 value={student.email}
                 onChange={(e) => setStudent({ ...student, email: e.target.value })}
-                className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
-                required
+                className={`mt-1 block w-full rounded-md shadow-sm focus:ring-primary focus:border-primary bg-background text-foreground px-3 py-2 ${
+                  formErrors.email ? 'border-destructive' : 'border-input'
+                }`}
               />
+              {formErrors.email && (
+                <p className="mt-1 text-sm text-destructive">{formErrors.email}</p>
+              )}
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-card-foreground">Class</label>
+              <label className="block text-sm font-medium text-card-foreground mb-1">
+                Class
+              </label>
               <input
                 type="text"
                 value={student.class}
                 onChange={(e) => setStudent({ ...student, class: e.target.value })}
-                className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
-                required
+                className={`mt-1 block w-full rounded-md shadow-sm focus:ring-primary focus:border-primary bg-background text-foreground px-3 py-2 ${
+                  formErrors.class ? 'border-destructive' : 'border-input'
+                }`}
               />
+              {formErrors.class && (
+                <p className="mt-1 text-sm text-destructive">{formErrors.class}</p>
+              )}
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-card-foreground">Enrollment Date</label>
+              <label className="block text-sm font-medium text-card-foreground mb-1">
+                Enrollment Date
+              </label>
               <input
                 type="date"
                 value={student.enrollmentDate}
                 onChange={(e) => setStudent({ ...student, enrollmentDate: e.target.value })}
-                className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
-                required
+                className={`mt-1 block w-full rounded-md shadow-sm focus:ring-primary focus:border-primary bg-background text-foreground px-3 py-2 ${
+                  formErrors.enrollmentDate ? 'border-destructive' : 'border-input'
+                }`}
               />
+              {formErrors.enrollmentDate && (
+                <p className="mt-1 text-sm text-destructive">{formErrors.enrollmentDate}</p>
+              )}
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-card-foreground mb-1">
+                {id ? 'New Password (leave blank to keep current)' : 'Password'}
+              </label>
+              <input
+                type="password"
+                value={student.password}
+                onChange={(e) => setStudent({ ...student, password: e.target.value })}
+                className={`mt-1 block w-full rounded-md shadow-sm focus:ring-primary focus:border-primary bg-background text-foreground px-3 py-2 ${
+                  formErrors.password ? 'border-destructive' : 'border-input'
+                }`}
+                placeholder={id ? '••••••••' : ''}
+              />
+              {formErrors.password && (
+                <p className="mt-1 text-sm text-destructive">{formErrors.password}</p>
+              )}
+            </div>
+
             <div className="flex justify-end gap-2 pt-6 border-t border-border">
               <button
                 type="button"
