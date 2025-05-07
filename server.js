@@ -2,9 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import examRoutes from './src/routes/examRoutes.js';
-import studentRoutes from './src/routes/studentRoutes.js';
-import resultRoutes from './src/routes/resultRoutes.js';
+import userRoutes from './src/routes/userRoutes.js';
+import createUserCollection from './src/migrations/createUserCollection.js';
 
 dotenv.config();
 
@@ -15,15 +14,18 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/api/exams', examRoutes);
-app.use('/api/students', studentRoutes);
-app.use('/api/results', resultRoutes);
+app.use('/api/users', userRoutes);
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/grademe';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 mongoose.connect(MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
+  .then(async () => {
+    console.log('Connected to MongoDB');
+    // Run migrations
+    await createUserCollection();
+    console.log('Migrations completed');
+  })
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Error handling middleware
