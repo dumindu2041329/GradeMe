@@ -23,7 +23,7 @@ const Students = () => {
   });
 
   const { data: students = [], isLoading } = useQuery('students', studentAPI.getAll, {
-    refetchInterval: 5000, // Poll every 5 seconds
+    refetchInterval: 3000, // Poll every 3 seconds
   });
 
   const deleteMutation = useMutation(

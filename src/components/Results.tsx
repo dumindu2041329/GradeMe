@@ -21,6 +21,8 @@ const Results = () => {
   const { data: results = [], isLoading } = useQuery('results', async () => {
     const response = await resultAPI.getAll();
     return response.data;
+  }, {
+    refetchInterval: 3000, // Poll every 3 seconds
   });
 
   const handleExport = () => {
