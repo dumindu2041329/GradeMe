@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { studentAPI } from '../services/api';
-import { useMutation, useQueryClient, useQuery } from 'react-query';
 
 interface Student {
-  _id?: string;
   name: string;
   email: string;
   class: string;
@@ -24,7 +21,6 @@ interface FormErrors {
 const StudentForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const queryClient = useQueryClient();
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [student, setStudent] = useState<Student>({
     name: '',
@@ -33,48 +29,6 @@ const StudentForm = () => {
     enrollmentDate: new Date().toISOString().split('T')[0],
     password: ''
   });
-
-  const { data: existingStudent, isLoading: isLoadingStudent } = useQuery(
-    ['student', id],
-    () => studentAPI.getById(id!),
-    {
-      enabled: !!id,
-      onSuccess: (data) => {
-        if (data) {
-          // Remove password from existing student data
-          const { password, ...studentData } = data;
-          setStudent(studentData);
-        }
-      }
-    }
-  );
-
-  const createMutation = useMutation(
-    (data: Student) => studentAPI.create(data),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('students');
-        navigate('/students');
-      },
-      onError: (error: any) => {
-        alert(error.message || 'Failed to create student');
-      }
-    }
-  );
-
-  const updateMutation = useMutation(
-    (data: Student) => studentAPI.update(id!, data),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('students');
-        queryClient.invalidateQueries(['student', id]);
-        navigate('/students');
-      },
-      onError: (error: any) => {
-        alert(error.message || 'Failed to update student');
-      }
-    }
-  );
 
   const validateForm = (): boolean => {
     const errors: FormErrors = {};
@@ -108,36 +62,17 @@ const StudentForm = () => {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) {
       return;
     }
 
-    try {
-      if (id) {
-        // If updating, only include password if it's been changed
-        const updateData = {
-          ...student,
-          password: student.password || undefined
-        };
-        await updateMutation.mutateAsync(updateData);
-      } else {
-        await createMutation.mutateAsync(student);
-      }
-    } catch (error) {
-      console.error('Error saving student:', error);
-    }
+    // Here you would normally save the data
+    console.log('Student data:', student);
+    navigate('/students');
   };
-
-  if (isLoadingStudent) {
-    return (
-      <div className="h-[calc(100vh-60px)] lg:h-[calc(100vh-120px)] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="h-[calc(100vh-60px)] lg:h-[calc(100vh-120px)] overflow-y-auto">
