@@ -7,6 +7,7 @@ import createUserCollection from './src/migrations/createUserCollection.js';
 import createExamCollection from './src/migrations/createExamCollection.js';
 import createStudentCollection from './src/migrations/createStudentCollection.js';
 import createResultCollection from './src/migrations/createResultCollection.js';
+import seedUsers from './src/seeds/userSeeds.js';
 
 dotenv.config();
 
@@ -31,6 +32,10 @@ mongoose.connect(MONGODB_URI)
     await createStudentCollection();
     await createResultCollection();
     console.log('Migrations completed');
+    
+    // Run seeds
+    await seedUsers();
+    console.log('Seeds completed');
   })
   .catch(err => console.error('MongoDB connection error:', err));
 

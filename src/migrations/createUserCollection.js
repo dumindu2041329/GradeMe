@@ -1,6 +1,4 @@
 import mongoose from 'mongoose';
-import User from '../models/User.js';
-import bcrypt from 'bcryptjs';
 
 const createUserCollection = async () => {
   try {
@@ -71,34 +69,6 @@ const createUserCollection = async () => {
       { unique: true }
     );
     console.log('Email index created');
-
-    // Create admin user
-    const adminSalt = await bcrypt.genSalt(10);
-    const adminHashedPassword = await bcrypt.hash('admin123', adminSalt);
-    
-    await User.create({
-      firstName: 'Admin',
-      lastName: 'User',
-      email: 'admin@example.com',
-      password: adminHashedPassword,
-      role: 'admin',
-      isActive: true
-    });
-    console.log('Admin user created');
-
-    // Create student user
-    const studentSalt = await bcrypt.genSalt(10);
-    const studentHashedPassword = await bcrypt.hash('student123', studentSalt);
-    
-    await User.create({
-      firstName: 'Student',
-      lastName: 'User',
-      email: 'student@example.com',
-      password: studentHashedPassword,
-      role: 'student',
-      isActive: true
-    });
-    console.log('Student user created');
 
   } catch (error) {
     console.error('Error creating user collection:', error);
