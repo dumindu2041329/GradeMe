@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Eye, EyeOff, ArrowLeft, GraduationCap } from 'lucide-react';
+import { Lock, Eye, EyeOff, ArrowLeft, GraduationCap, Sun, Moon } from 'lucide-react';
 import { auth } from '../lib/auth';
 
 const Login = () => {
@@ -12,6 +12,29 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const hour = new Date().getHours();
+    const shouldBeDark = hour < 6 || hour >= 18;
+
+    let theme = savedTheme;
+    if (!savedTheme) {
+      theme = shouldBeDark || prefersDark ? 'dark' : 'light';
+    }
+
+    setIsDark(theme === 'dark');
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = !isDark;
+    setIsDark(newTheme);
+    document.documentElement.classList.toggle('dark', newTheme);
+    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+  };
 
   const validateEmail = (email: string) => {
     if (!email.trim()) {
@@ -110,6 +133,17 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col justify-center px-4 sm:px-6 lg:px-8">
+      <button
+        onClick={toggleTheme}
+        className="absolute top-4 right-4 p-2 rounded-lg bg-card border border-border hover:bg-accent transition-colors"
+      >
+        {isDark ? (
+          <Sun className="h-5 w-5 text-muted-foreground" />
+        ) : (
+          <Moon className="h-5 w-5 text-muted-foreground" />
+        )}
+      </button>
+
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex flex-col items-center">
           <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-primary via-primary/90 to-primary rounded-2xl shadow-xl flex items-center justify-center mb-4 transform hover:rotate-6 transition-transform duration-300">
