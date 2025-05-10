@@ -5,7 +5,8 @@ import {
   createUser,
   updateUser,
   deleteUser,
-  loginUser
+  loginUser,
+  resetPassword
 } from '../controllers/userController.js';
 
 const router = express.Router();
@@ -17,7 +18,8 @@ router.post('/', createUser);
 router.put('/:id', updateUser);
 router.delete('/:id', deleteUser);
 
-// Authentication route
+// Authentication routes
 router.post('/login', loginUser);
+router.post('/reset-password', resetPassword);
 
 export default router;

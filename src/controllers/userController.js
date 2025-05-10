@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import bcrypt from 'bcryptjs';
 
 // Get all users
 export const getUsers = async (req, res) => {
@@ -26,6 +27,14 @@ export const getUser = async (req, res) => {
 // Create a new user
 export const createUser = async (req, res) => {
   try {
+    const { email } = req.body;
+    
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
     const user = new User(req.body);
     const savedUser = await user.save();
     const { password, ...userResponse } = savedUser.toObject();
@@ -47,7 +56,8 @@ export const updateUser = async (req, res) => {
     Object.assign(user, updateData);
     
     if (password) {
-      user.password = password;
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
     }
 
     const updatedUser = await user.save();
@@ -94,6 +104,27 @@ export const loginUser = async (req, res) => {
 
     const { password: _, ...userResponse } = user.toObject();
     res.status(200).json(userResponse);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Reset password request
+export const resetPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // In a real application, you would:
+    // 1. Generate a reset token
+    // 2. Save it to the user record with an expiration
+    // 3. Send an email with the reset link
+    
+    res.status(200).json({ message: 'Password reset instructions sent' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
