@@ -12,26 +12,45 @@ interface AuthResponse {
 export const auth = {
   signIn: async (email: string, password: string): Promise<AuthResponse> => {
     try {
-      const response = await api.post('/users/login', { email, password });
-      const user = response.data;
+      // First try admin login
+      try {
+        const response = await api.post('/users/login', { email, password });
+        const user = response.data;
 
-      // Store auth state
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userRole', user.role);
-      localStorage.setItem('userId', user._id);
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('userRole', user.role);
+        localStorage.setItem('userId', user._id);
 
-      return {
-        user: {
-          id: user._id,
-          email: user.email,
-          role: user.role,
-        },
-        error: null,
-      };
+        return {
+          user: {
+            id: user._id,
+            email: user.email,
+            role: user.role,
+          },
+          error: null,
+        };
+      } catch (adminError) {
+        // If admin login fails, try student login
+        const studentResponse = await api.post('/students/login', { email, password });
+        const student = studentResponse.data;
+
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('userRole', 'student');
+        localStorage.setItem('userId', student._id);
+
+        return {
+          user: {
+            id: student._id,
+            email: student.email,
+            role: 'student',
+          },
+          error: null,
+        };
+      }
     } catch (error: any) {
       return { 
         user: null, 
-        error: new Error(error.response?.data?.message || 'Authentication failed') 
+        error: new Error(error.response?.data?.message || 'Invalid email or password') 
       };
     }
   },
@@ -52,14 +71,25 @@ export const auth = {
     }
 
     try {
-      const response = await api.get(`/users/${userId}`);
-      const user = response.data;
+      if (userRole === 'admin') {
+        const response = await api.get(`/users/${userId}`);
+        const user = response.data;
 
-      return {
-        id: user._id,
-        email: user.email,
-        role: user.role,
-      };
+        return {
+          id: user._id,
+          email: user.email,
+          role: user.role,
+        };
+      } else {
+        const response = await api.get(`/students/${userId}`);
+        const student = response.data;
+
+        return {
+          id: student._id,
+          email: student.email,
+          role: 'student',
+        };
+      }
     } catch (error) {
       return null;
     }

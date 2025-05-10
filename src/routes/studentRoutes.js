@@ -4,7 +4,8 @@ import {
   getStudent,
   createStudent,
   updateStudent,
-  deleteStudent
+  deleteStudent,
+  loginStudent
 } from '../controllers/studentController.js';
 
 const router = express.Router();
@@ -14,5 +15,6 @@ router.get('/:id', getStudent);
 router.post('/', createStudent);
 router.put('/:id', updateStudent);
 router.delete('/:id', deleteStudent);
+router.post('/login', loginStudent);
 
 export default router;

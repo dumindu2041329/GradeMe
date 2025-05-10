@@ -24,6 +24,28 @@ export const getStudent = async (req, res) => {
   }
 };
 
+// Student login
+export const loginStudent = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    const student = await Student.findOne({ email });
+    if (!student) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    const isMatch = await bcrypt.compare(password, student.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    const { password: _, ...studentData } = student.toObject();
+    res.status(200).json(studentData);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Create a new student
 export const createStudent = async (req, res) => {
   try {

@@ -3,6 +3,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import userRoutes from './src/routes/userRoutes.js';
+import studentRoutes from './src/routes/studentRoutes.js';
+import examRoutes from './src/routes/examRoutes.js';
+import resultRoutes from './src/routes/resultRoutes.js';
 import createUserCollection from './src/migrations/createUserCollection.js';
 import createExamCollection from './src/migrations/createExamCollection.js';
 import createStudentCollection from './src/migrations/createStudentCollection.js';
@@ -19,6 +22,9 @@ app.use(express.json());
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/students', studentRoutes);
+app.use('/api/exams', examRoutes);
+app.use('/api/results', resultRoutes);
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI;
