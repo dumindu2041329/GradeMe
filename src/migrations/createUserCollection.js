@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import User from '../models/User.js';
+import bcrypt from 'bcryptjs';
 
 const createUserCollection = async () => {
   try {
@@ -34,8 +35,8 @@ const createUserCollection = async () => {
                 description: 'Password must be at least 6 characters'
               },
               role: {
-                enum: ['admin', 'user'],
-                description: 'Role must be either admin or user'
+                enum: ['admin', 'student'],
+                description: 'Role must be either admin or student'
               },
               isActive: {
                 bsonType: 'bool',
@@ -67,19 +68,38 @@ const createUserCollection = async () => {
         { unique: true }
       );
       console.log('Email index created');
-    }
 
-    // Create admin user if not exists
-    const adminExists = await User.findOne({ role: 'admin' });
-    if (!adminExists) {
+      // Create admin user
+      const adminSalt = await bcrypt.genSalt(10);
+      const adminHashedPassword = await bcrypt.hash('admin123', adminSalt);
+      
       await User.create({
         firstName: 'Admin',
         lastName: 'User',
         email: 'admin@example.com',
-        password: 'admin123',
-        role: 'admin'
+        password: adminHashedPassword,
+        role: 'admin',
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
       });
       console.log('Admin user created');
+
+      // Create student user
+      const studentSalt = await bcrypt.genSalt(10);
+      const studentHashedPassword = await bcrypt.hash('student123', studentSalt);
+      
+      await User.create({
+        firstName: 'Student',
+        lastName: 'User',
+        email: 'student@example.com',
+        password: studentHashedPassword,
+        role: 'student',
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+      console.log('Student user created');
     }
 
   } catch (error) {

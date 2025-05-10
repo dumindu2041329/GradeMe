@@ -4,6 +4,9 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import userRoutes from './src/routes/userRoutes.js';
 import createUserCollection from './src/migrations/createUserCollection.js';
+import createExamCollection from './src/migrations/createExamCollection.js';
+import createStudentCollection from './src/migrations/createStudentCollection.js';
+import createResultCollection from './src/migrations/createResultCollection.js';
 
 dotenv.config();
 
@@ -24,6 +27,9 @@ mongoose.connect(MONGODB_URI)
     console.log('Connected to MongoDB');
     // Run migrations
     await createUserCollection();
+    await createExamCollection();
+    await createStudentCollection();
+    await createResultCollection();
     console.log('Migrations completed');
   })
   .catch(err => console.error('MongoDB connection error:', err));
