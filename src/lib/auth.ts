@@ -17,6 +17,10 @@ export const auth = {
         const response = await api.post('/users/login', { email, password });
         const user = response.data;
 
+        if (!user || !user._id || !user.email || !user.role) {
+          throw new Error('Invalid user data received from server');
+        }
+
         localStorage.setItem('isAuthenticated', 'true');
         localStorage.setItem('userRole', user.role);
         localStorage.setItem('userId', user._id);
@@ -29,36 +33,80 @@ export const auth = {
           },
           error: null,
         };
-      } catch (adminError) {
-        // If admin login fails, try student login
-        const studentResponse = await api.post('/students/login', { email, password });
-        const student = studentResponse.data;
+      } catch (adminError: any) {
+        // Check for network errors first
+        if (!adminError.response) {
+          throw new Error('Network error. Please check your connection and try again.');
+        }
 
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('userRole', 'student');
-        localStorage.setItem('userId', student._id);
+        // Handle specific admin login errors
+        if (adminError.response?.status === 401) {
+          // Don't throw here, try student login instead
+          console.log('Admin login failed, trying student login...');
+        } else if (adminError.response?.status === 429) {
+          throw new Error('Too many login attempts. Please try again later.');
+        } else if (adminError.response?.status >= 500) {
+          throw new Error('Server error. Please try again later.');
+        }
 
-        return {
-          user: {
-            id: student._id,
-            email: student.email,
-            role: 'student',
-          },
-          error: null,
-        };
+        // Try student login
+        try {
+          const studentResponse = await api.post('/students/login', { email, password });
+          const student = studentResponse.data;
+
+          if (!student || !student._id || !student.email) {
+            throw new Error('Invalid student data received from server');
+          }
+
+          localStorage.setItem('isAuthenticated', 'true');
+          localStorage.setItem('userRole', 'student');
+          localStorage.setItem('userId', student._id);
+
+          return {
+            user: {
+              id: student._id,
+              email: student.email,
+              role: 'student',
+            },
+            error: null,
+          };
+        } catch (studentError: any) {
+          // Check for network errors
+          if (!studentError.response) {
+            throw new Error('Network error. Please check your connection and try again.');
+          }
+
+          // Handle specific student login errors
+          if (studentError.response?.status === 401) {
+            throw new Error('Invalid email or password.');
+          } else if (studentError.response?.status === 429) {
+            throw new Error('Too many login attempts. Please try again later.');
+          } else if (studentError.response?.status >= 500) {
+            throw new Error('Server error. Please try again later.');
+          }
+
+          throw new Error('Invalid credentials');
+        }
       }
     } catch (error: any) {
+      // Handle any uncaught errors with a specific message
       return { 
         user: null, 
-        error: new Error(error.response?.data?.message || 'Invalid email or password') 
+        error: error instanceof Error 
+          ? error 
+          : new Error(error?.message || 'An unexpected error occurred. Please try again.') 
       };
     }
   },
 
   signOut: async () => {
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userId');
+    try {
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('userId');
+    } catch (error) {
+      console.error('Error during sign out:', error);
+    }
   },
 
   getUser: async () => {
@@ -71,38 +119,64 @@ export const auth = {
     }
 
     try {
-      if (userRole === 'admin') {
-        const response = await api.get(`/users/${userId}`);
-        const user = response.data;
+      const endpoint = userRole === 'admin' ? `/users/${userId}` : `/students/${userId}`;
+      const response = await api.get(endpoint);
+      const userData = response.data;
 
-        return {
-          id: user._id,
-          email: user.email,
-          role: user.role,
-        };
-      } else {
-        const response = await api.get(`/students/${userId}`);
-        const student = response.data;
-
-        return {
-          id: student._id,
-          email: student.email,
-          role: 'student',
-        };
+      if (!userData || !userData._id || !userData.email) {
+        throw new Error('Invalid user data received from server');
       }
-    } catch (error) {
+
+      return {
+        id: userData._id,
+        email: userData.email,
+        role: userRole === 'admin' ? userData.role : 'student',
+      };
+    } catch (error: any) {
+      console.error('Error fetching user data:', error);
       return null;
     }
   },
 
   resetPassword: async (email: string): Promise<{ success: boolean; error: Error | null }> => {
     try {
-      await api.post('/users/reset-password', { email });
+      if (!email) {
+        throw new Error('Email is required');
+      }
+
+      const response = await api.post('/users/reset-password', { email });
+      
+      if (!response.data) {
+        throw new Error('Invalid response from server');
+      }
+
       return { success: true, error: null };
     } catch (error: any) {
+      // Handle specific error cases
+      if (!error.response) {
+        return {
+          success: false,
+          error: new Error('Network error. Please check your connection and try again.')
+        };
+      }
+
+      if (error.response.status === 404) {
+        return {
+          success: false,
+          error: new Error('No account found with this email address.')
+        };
+      }
+
+      if (error.response.status === 429) {
+        return {
+          success: false,
+          error: new Error('Too many reset attempts. Please try again later.')
+        };
+      }
+
       return { 
         success: false, 
-        error: new Error(error.response?.data?.message || 'Failed to send reset email') 
+        error: new Error(error.response?.data?.message || 'Failed to send reset email. Please try again.') 
       };
     }
   }

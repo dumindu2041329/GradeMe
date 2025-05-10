@@ -1,48 +1,50 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 const studentSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Student name is required'],
-    trim: true
-  },
   email: {
     type: String,
-    required: [true, 'Email is required'],
+    required: true,
     unique: true,
     trim: true,
-    lowercase: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
-  },
-  class: {
-    type: String,
-    required: [true, 'Class is required'],
-    trim: true
-  },
-  enrollmentDate: {
-    type: Date,
-    required: [true, 'Enrollment date is required']
+    lowercase: true
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
-    minlength: [6, 'Password must be at least 6 characters long']
+    required: true
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
+  firstName: {
+    type: String,
+    required: true,
+    trim: true
   },
-  updatedAt: {
+  lastName: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  studentId: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true
+  },
+  lastLogin: {
     type: Date,
-    default: Date.now
+    default: null
   }
+}, {
+  timestamps: true
 });
 
-// Update the updatedAt timestamp before saving
-studentSchema.pre('save', function(next) {
-  this.updatedAt = new Date();
-  next();
-});
+// Add comparePassword method to student schema
+studentSchema.methods.comparePassword = async function(candidatePassword) {
+  try {
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
 const Student = mongoose.model('Student', studentSchema);
 
