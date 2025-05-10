@@ -12,7 +12,6 @@ interface AuthResponse {
 export const auth = {
   signIn: async (email: string, password: string): Promise<AuthResponse> => {
     try {
-      // First try admin login
       try {
         const response = await api.post('/api/users/login', { email, password });
         const user = response.data;
@@ -34,14 +33,11 @@ export const auth = {
           error: null,
         };
       } catch (adminError: any) {
-        // Check for network errors first
         if (!adminError.response) {
           throw new Error('Network error. Please check your connection and try again.');
         }
 
-        // Handle specific admin login errors
         if (adminError.response?.status === 401) {
-          // Don't throw here, try student login instead
           console.log('Admin login failed, trying student login...');
         } else if (adminError.response?.status === 429) {
           throw new Error('Too many login attempts. Please try again later.');
@@ -49,7 +45,6 @@ export const auth = {
           throw new Error('Server error. Please try again later.');
         }
 
-        // Try student login
         try {
           const studentResponse = await api.post('/api/students/login', { email, password });
           const student = studentResponse.data;
@@ -71,12 +66,10 @@ export const auth = {
             error: null,
           };
         } catch (studentError: any) {
-          // Check for network errors
           if (!studentError.response) {
             throw new Error('Network error. Please check your connection and try again.');
           }
 
-          // Handle specific student login errors
           if (studentError.response?.status === 401) {
             throw new Error('Invalid email or password.');
           } else if (studentError.response?.status === 429) {

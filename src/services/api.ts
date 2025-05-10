@@ -17,6 +17,26 @@ const handleError = (error: any) => {
   throw error;
 };
 
+// User authentication API
+export const authAPI = {
+  login: async (email: string, password: string) => {
+    try {
+      const response = await api.post('/users/login', { email, password });
+      return response.data;
+    } catch (error) {
+      handleError(error);
+    }
+  },
+  resetPassword: async (email: string) => {
+    try {
+      const response = await api.post('/users/reset-password', { email });
+      return response.data;
+    } catch (error) {
+      handleError(error);
+    }
+  }
+};
+
 // Exam API
 export const examAPI = {
   getAll: async () => {
