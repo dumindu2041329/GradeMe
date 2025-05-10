@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Lock, Eye, EyeOff, ArrowLeft, GraduationCap } from 'lucide-react';
 import { auth } from '../lib/auth';
 
 const Login = () => {
@@ -111,14 +111,15 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col justify-center px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <div className="rounded-full bg-primary/10 p-3 ring-2 ring-primary/20">
-            <Lock className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+        <div className="flex flex-col items-center">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-primary via-primary/90 to-primary rounded-2xl shadow-xl flex items-center justify-center mb-4 transform hover:rotate-6 transition-transform duration-300">
+            <GraduationCap className="h-10 w-10 sm:h-12 sm:w-12 text-white" />
           </div>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-2">GradeMe</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            {isForgotPassword ? 'Reset your password' : 'Sign in to your account'}
+          </p>
         </div>
-        <h2 className="mt-6 text-center text-2xl sm:text-3xl font-extrabold text-foreground">
-          {isForgotPassword ? 'Reset your password' : 'Sign in to your account'}
-        </h2>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
