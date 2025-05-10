@@ -14,7 +14,7 @@ export const auth = {
     try {
       // First try admin login
       try {
-        const response = await api.post('/users/login', { email, password });
+        const response = await api.post('/api/users/login', { email, password });
         const user = response.data;
 
         if (!user || !user._id || !user.email || !user.role) {
@@ -51,7 +51,7 @@ export const auth = {
 
         // Try student login
         try {
-          const studentResponse = await api.post('/students/login', { email, password });
+          const studentResponse = await api.post('/api/students/login', { email, password });
           const student = studentResponse.data;
 
           if (!student || !student._id || !student.email) {
@@ -89,7 +89,6 @@ export const auth = {
         }
       }
     } catch (error: any) {
-      // Handle any uncaught errors with a specific message
       return { 
         user: null, 
         error: error instanceof Error 
@@ -119,7 +118,7 @@ export const auth = {
     }
 
     try {
-      const endpoint = userRole === 'admin' ? `/users/${userId}` : `/students/${userId}`;
+      const endpoint = userRole === 'admin' ? `/api/users/${userId}` : `/api/students/${userId}`;
       const response = await api.get(endpoint);
       const userData = response.data;
 
@@ -144,7 +143,7 @@ export const auth = {
         throw new Error('Email is required');
       }
 
-      const response = await api.post('/users/reset-password', { email });
+      const response = await api.post('/api/users/reset-password', { email });
       
       if (!response.data) {
         throw new Error('Invalid response from server');
@@ -152,7 +151,6 @@ export const auth = {
 
       return { success: true, error: null };
     } catch (error: any) {
-      // Handle specific error cases
       if (!error.response) {
         return {
           success: false,
