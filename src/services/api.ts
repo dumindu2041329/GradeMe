@@ -1,188 +1,60 @@
-import axios from 'axios';
+import { mockExams, mockResults } from '../lib/mockData';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
-
-// Error handler
-const handleError = (error: any) => {
-  if (error.response) {
-    throw new Error(error.response.data.message || 'An error occurred');
-  }
-  throw error;
-};
-
-// User authentication API
-export const authAPI = {
-  login: async (email: string, password: string) => {
-    try {
-      const response = await api.post('/users/login', { email, password });
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
-  },
-  resetPassword: async (email: string) => {
-    try {
-      const response = await api.post('/users/reset-password', { email });
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
-  }
-};
-
-// Exam API
 export const examAPI = {
   getAll: async () => {
-    try {
-      const response = await api.get('/exams');
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
+    await delay(500);
+    return { data: mockExams };
   },
   getById: async (id: string) => {
-    try {
-      const response = await api.get(`/exams/${id}`);
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
+    await delay(500);
+    const exam = mockExams.find(e => e.id === id);
+    if (!exam) throw new Error('Exam not found');
+    return { data: exam };
   },
   create: async (data: any) => {
-    try {
-      const response = await api.post('/exams', data);
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
+    await delay(500);
+    return { data: { ...data, id: Date.now().toString() } };
   },
   update: async (id: string, data: any) => {
-    try {
-      const response = await api.put(`/exams/${id}`, data);
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
+    await delay(500);
+    return { data: { ...data, id } };
   },
   delete: async (id: string) => {
-    try {
-      const response = await api.delete(`/exams/${id}`);
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
+    await delay(500);
+    return { data: { message: 'Exam deleted successfully' } };
   }
 };
 
-// Student API
-export const studentAPI = {
-  getAll: async () => {
-    try {
-      const response = await api.get('/students');
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
-  },
-  getById: async (id: string) => {
-    try {
-      const response = await api.get(`/students/${id}`);
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
-  },
-  create: async (data: any) => {
-    try {
-      const response = await api.post('/students', data);
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
-  },
-  update: async (id: string, data: any) => {
-    try {
-      const response = await api.put(`/students/${id}`, data);
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
-  },
-  delete: async (id: string) => {
-    try {
-      const response = await api.delete(`/students/${id}`);
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
-  }
-};
-
-// Result API
 export const resultAPI = {
   getAll: async () => {
-    try {
-      const response = await api.get('/results');
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
+    await delay(500);
+    return { data: mockResults };
   },
   getById: async (id: string) => {
-    try {
-      const response = await api.get(`/results/${id}`);
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
-  },
-  getByStudent: async (studentId: string) => {
-    try {
-      const response = await api.get(`/results/student/${studentId}`);
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
-  },
-  getByExam: async (examId: string) => {
-    try {
-      const response = await api.get(`/results/exam/${examId}`);
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
+    await delay(500);
+    const result = mockResults.find(r => r.id === id);
+    if (!result) throw new Error('Result not found');
+    return { data: result };
   },
   create: async (data: any) => {
-    try {
-      const response = await api.post('/results', data);
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
+    await delay(500);
+    return { data: { ...data, id: Date.now().toString() } };
   },
   update: async (id: string, data: any) => {
-    try {
-      const response = await api.put(`/results/${id}`, data);
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
+    await delay(500);
+    return { data: { ...data, id } };
   },
   delete: async (id: string) => {
-    try {
-      const response = await api.delete(`/results/${id}`);
-      return response.data;
-    } catch (error) {
-      handleError(error);
-    }
+    await delay(500);
+    return { data: { message: 'Result deleted successfully' } };
   }
 };
 
-export default api;
+export default {
+  get: () => Promise.resolve({ data: {} }),
+  post: () => Promise.resolve({ data: {} }),
+  put: () => Promise.resolve({ data: {} }),
+  delete: () => Promise.resolve({ data: {} })
+};
