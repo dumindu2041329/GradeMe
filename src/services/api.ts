@@ -52,6 +52,25 @@ export const resultAPI = {
   }
 };
 
+export const studentAPI = {
+  getAll: async () => {
+    await delay(500);
+    return [];
+  },
+  create: async (data: any) => {
+    await delay(500);
+    return { data: { ...data, _id: Date.now().toString() } };
+  },
+  update: async (id: string, data: any) => {
+    await delay(500);
+    return { data: { ...data, _id: id } };
+  },
+  delete: async (id: string) => {
+    await delay(500);
+    return { data: { message: 'Student deleted successfully' } };
+  }
+};
+
 export default {
   get: () => Promise.resolve({ data: {} }),
   post: () => Promise.resolve({ data: {} }),
