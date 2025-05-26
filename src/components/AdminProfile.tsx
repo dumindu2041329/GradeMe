@@ -147,50 +147,6 @@ const AdminProfile = () => {
                       </span>
                     </div>
                   </div>
-
-                  <div className="pt-6 border-t border-border">
-                    <h3 className="text-lg font-medium text-card-foreground mb-4">Notification Settings</h3>
-                    <div className="space-y-6">
-                      <div>
-                        <h4 className="text-sm font-medium text-card-foreground mb-4">Email Notifications</h4>
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="text-sm text-card-foreground">Exam Results</p>
-                              <p className="text-sm text-muted-foreground">Get notified when exam results are published</p>
-                            </div>
-                            <Switch checked={profileData.notifications.email.examResults} disabled />
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="text-sm text-card-foreground">New Students</p>
-                              <p className="text-sm text-muted-foreground">Get notified when new students register</p>
-                            </div>
-                            <Switch checked={profileData.notifications.email.newStudents} disabled />
-                          </div>
-                        </div>
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-medium text-card-foreground mb-4">SMS Notifications</h4>
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="text-sm text-card-foreground">Exam Results</p>
-                              <p className="text-sm text-muted-foreground">Get SMS alerts when exam results are published</p>
-                            </div>
-                            <Switch checked={profileData.notifications.sms.examResults} disabled />
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="text-sm text-card-foreground">New Students</p>
-                              <p className="text-sm text-muted-foreground">Get SMS alerts when new students register</p>
-                            </div>
-                            <Switch checked={profileData.notifications.sms.newStudents} disabled />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -233,17 +189,18 @@ const AdminProfile = () => {
                     </div>
 
                     <div className="pt-6 border-t border-border">
-                      <h3 className="text-lg font-medium text-card-foreground mb-4 flex items-center gap-2">
-                        <Bell className="h-5 w-5" />
-                        Notification Settings
-                      </h3>
-                      <div className="space-y-6">
-                        <div>
+                      <div className="flex items-center gap-2 mb-6">
+                        <Bell className="h-5 w-5 text-primary" />
+                        <h3 className="text-lg font-medium text-card-foreground">Notification Settings</h3>
+                      </div>
+
+                      <div className="space-y-8">
+                        <div className="bg-accent/50 rounded-lg p-4">
                           <h4 className="text-sm font-medium text-card-foreground mb-4">Email Notifications</h4>
                           <div className="space-y-4">
                             <div className="flex items-center justify-between">
                               <div>
-                                <p className="text-sm text-card-foreground">Exam Results</p>
+                                <p className="text-sm font-medium text-card-foreground">Exam Results</p>
                                 <p className="text-sm text-muted-foreground">Get notified when exam results are published</p>
                               </div>
                               <Switch
@@ -253,7 +210,7 @@ const AdminProfile = () => {
                             </div>
                             <div className="flex items-center justify-between">
                               <div>
-                                <p className="text-sm text-card-foreground">New Students</p>
+                                <p className="text-sm font-medium text-card-foreground">New Students</p>
                                 <p className="text-sm text-muted-foreground">Get notified when new students register</p>
                               </div>
                               <Switch
@@ -263,12 +220,13 @@ const AdminProfile = () => {
                             </div>
                           </div>
                         </div>
-                        <div>
+
+                        <div className="bg-accent/50 rounded-lg p-4">
                           <h4 className="text-sm font-medium text-card-foreground mb-4">SMS Notifications</h4>
                           <div className="space-y-4">
                             <div className="flex items-center justify-between">
                               <div>
-                                <p className="text-sm text-card-foreground">Exam Results</p>
+                                <p className="text-sm font-medium text-card-foreground">Exam Results</p>
                                 <p className="text-sm text-muted-foreground">Get SMS alerts when exam results are published</p>
                               </div>
                               <Switch
@@ -278,7 +236,7 @@ const AdminProfile = () => {
                             </div>
                             <div className="flex items-center justify-between">
                               <div>
-                                <p className="text-sm text-card-foreground">New Students</p>
+                                <p className="text-sm font-medium text-card-foreground">New Students</p>
                                 <p className="text-sm text-muted-foreground">Get SMS alerts when new students register</p>
                               </div>
                               <Switch
