@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home, ArrowLeft } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 const NotFound = () => {
   const navigate = useNavigate();
@@ -19,8 +21,8 @@ const NotFound = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full">
-        <div className="bg-gradient-to-br from-card via-card to-muted rounded-2xl shadow-2xl border border-border p-8 md:p-12 relative overflow-hidden">
+      <Card className="max-w-2xl w-full bg-gradient-to-br from-card via-card to-muted">
+        <CardContent className="p-8 md:p-12 relative">
           {/* Decorative elements */}
           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary via-primary/50 to-transparent" />
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2" />
@@ -45,27 +47,21 @@ const NotFound = () => {
 
               {/* Action buttons */}
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <button
+                <Button
                   onClick={handleBackClick}
-                  className="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-medium
-                           hover:bg-primary/90 transition-all duration-200 group
-                           focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
-                           shadow-lg hover:shadow-xl"
+                  className="gap-2"
                 >
                   <Home className="w-5 h-5 transition-transform group-hover:scale-110" />
                   Return Home
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => window.history.back()}
-                  className="flex items-center justify-center gap-2 px-6 py-3 
-                           bg-card text-card-foreground rounded-xl font-medium
-                           border border-border
-                           hover:bg-accent transition-all duration-200 group
-                           focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  className="gap-2"
                 >
                   <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
                   Go Back
-                </button>
+                </Button>
               </div>
 
               {/* Decorative dots */}
@@ -82,8 +78,8 @@ const NotFound = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

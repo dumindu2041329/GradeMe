@@ -1,5 +1,15 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface DeletePromptProps {
   isOpen: boolean;
@@ -16,34 +26,24 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
   onConfirm,
   onCancel,
 }) => {
-  if (!isOpen) return null;
-
   return (
-    <div className="delete-prompt">
-      <div className="delete-prompt-content">
-        <div className="delete-prompt-icon">
-          <AlertTriangle className="w-12 h-12 text-white" />
-        </div>
-        <div className="mt-12 text-center">
-          <h3 className="text-lg font-bold text-card-foreground mb-2">{title}</h3>
-          <p className="text-muted-foreground mb-6">{message}</p>
-          <div className="flex gap-3 justify-center">
-            <button
-              onClick={onCancel}
-              className="delete-prompt-button delete-prompt-cancel"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={onConfirm}
-              className="delete-prompt-button delete-prompt-confirm"
-            >
-              Delete
-            </button>
+    <AlertDialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <div className="mx-auto w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
+            <AlertTriangle className="h-6 w-6 text-destructive" />
           </div>
-        </div>
-      </div>
-    </div>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{message}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={onCancel}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 
