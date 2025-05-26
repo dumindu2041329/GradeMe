@@ -1,0 +1,227 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 33% 98%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 243 75% 59%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 243 75% 59%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 243 75% 59%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 243 75% 59%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  select {
+    @apply appearance-none bg-no-repeat;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-size: 1.5em 1.5em;
+  }
+  .dark select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23d1d5db' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  }
+}
+
+@layer components {
+  .action-button {
+    @apply inline-flex items-center gap-2 px-4 py-2 
+           bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
+           text-white font-medium rounded-lg
+           shadow-lg hover:shadow-xl
+           transform transition-all duration-200
+           hover:scale-[1.02] active:scale-[0.98]
+           hover:brightness-110
+           focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed
+           dark:focus:ring-offset-gray-900;
+  }
+
+  .modal-content {
+    @apply bg-gradient-to-br from-white via-white to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-indigo-950
+           p-6 rounded-xl shadow-2xl border-2 border-indigo-100 dark:border-indigo-900
+           backdrop-blur-xl backdrop-saturate-150
+           animate-modal-appear
+           z-[10000];
+  }
+
+  .form-input {
+    @apply mt-1 block w-full rounded-lg border border-indigo-200 dark:border-indigo-800
+           shadow-inner shadow-indigo-100 dark:shadow-indigo-900
+           focus:border-indigo-400 dark:focus:border-indigo-600
+           focus:ring-2 focus:ring-indigo-300 dark:focus:ring-indigo-700
+           bg-white dark:bg-gray-900
+           text-foreground
+           px-4 py-2.5
+           transition-all duration-200;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1;
+  }
+
+  .modal-overlay {
+    @apply fixed inset-0 bg-background/80 backdrop-blur-sm z-[9999];
+  }
+
+  .modal-container {
+    @apply fixed inset-0 flex items-center justify-center z-[9999];
+  }
+
+  .dropdown-menu {
+    @apply absolute z-[9998] mt-2 w-48 rounded-md shadow-lg bg-card border border-border;
+  }
+
+  .delete-prompt {
+    @apply fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-[99999];
+  }
+
+  .delete-prompt-content {
+    @apply bg-gradient-to-br from-white via-white to-red-50 dark:from-gray-900 dark:via-gray-900 dark:to-red-950
+           p-6 rounded-xl shadow-2xl border-2 border-red-100 dark:border-red-900
+           backdrop-blur-xl backdrop-saturate-150
+           animate-modal-appear
+           max-w-md w-full mx-4
+           relative;
+  }
+
+  .delete-prompt-icon {
+    @apply absolute -top-12 left-1/2 -translate-x-1/2
+           w-24 h-24 rounded-full
+           bg-gradient-to-br from-red-500 to-red-600
+           flex items-center justify-center
+           border-4 border-white dark:border-gray-900
+           shadow-xl;
+  }
+
+  .delete-prompt-button {
+    @apply px-4 py-2 rounded-lg font-medium
+           transform transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .delete-prompt-cancel {
+    @apply bg-secondary text-secondary-foreground
+           hover:bg-secondary/80
+           focus:ring-gray-500;
+  }
+
+  .delete-prompt-confirm {
+    @apply bg-gradient-to-r from-red-500 to-red-600
+           text-white
+           hover:brightness-110
+           focus:ring-red-500;
+  }
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@layer utilities {
+  .animate-modal-appear {
+    animation: modalAppear 0.3s ease-out forwards;
+  }
+
+  .content-margin {
+    @apply mt-6;
+  }
+
+  .section-margin {
+    @apply mt-8;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: linear-gradient(to bottom, rgba(99, 102, 241, 0.05), rgba(129, 140, 248, 0.1));
+  border-radius: 100vh;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #6366f1, #818cf8);
+  border-radius: 100vh;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #4f46e5, #6366f1);
+  border-width: 1px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: linear-gradient(to bottom, rgba(99, 102, 241, 0.1), rgba(165, 180, 252, 0.05));
+  border-radius: 100vh;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #818cf8, #a5b4fc);
+  border-radius: 100vh;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  background-clip: content-box;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #a5b4fc, #c7d2fe);
+  border-width: 1px;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

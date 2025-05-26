@@ -1,2 +1,2 @@
 # GradeMe
-Exam Management Website
+Exam Management System
