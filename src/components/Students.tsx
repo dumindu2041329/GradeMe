@@ -22,9 +22,12 @@ const Students = () => {
     studentId: null,
   });
 
-  const { data: students = [], isLoading } = useQuery('students', studentAPI.getAll, {
+  const { data, isLoading } = useQuery('students', studentAPI.getAll, {
     refetchInterval: 3000, // Poll every 3 seconds
   });
+
+  // Extract students array from the API response
+  const students = data?.data || [];
 
   const deleteMutation = useMutation(
     (id: string) => studentAPI.delete(id),

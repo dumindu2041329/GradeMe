@@ -2,6 +2,24 @@ import { mockExams, mockResults, MockExam, MockResult } from '../lib/mockData';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// Mock student data for testing
+const mockStudents = [
+  {
+    _id: '1',
+    name: 'John Doe',
+    email: 'john@example.com',
+    class: '12A',
+    enrollmentDate: '2024-01-15'
+  },
+  {
+    _id: '2',
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    class: '12B',
+    enrollmentDate: '2024-01-16'
+  }
+];
+
 export const examAPI = {
   getAll: async () => {
     await delay(500);
@@ -55,11 +73,13 @@ export const resultAPI = {
 export const studentAPI = {
   getAll: async () => {
     await delay(500);
-    return { data: [] };
+    return { data: mockStudents };
   },
   getById: async (id: string) => {
     await delay(500);
-    return { data: null };
+    const student = mockStudents.find(s => s._id === id);
+    if (!student) throw new Error('Student not found');
+    return { data: student };
   },
   create: async (data: any) => {
     await delay(500);
