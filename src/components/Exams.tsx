@@ -1,9 +1,29 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Calendar, Clock, Award } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { examAPI } from '../services/api';
-import DeletePrompt from './DeletePrompt';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Exam {
   _id: string;
@@ -19,17 +39,15 @@ const Exams = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
-  const [deletePrompt, setDeletePrompt] = useState<{ isOpen: boolean; examId: string | null }>({
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; examId: string | null }>({
     isOpen: false,
     examId: null,
   });
 
-  const { data, isLoading } = useQuery('exams', examAPI.getAll, {
-    refetchInterval: 3000, // Poll every 3 seconds
+  const { data: examsData, isLoading } = useQuery('exams', examAPI.getAll, {
+    refetchInterval: 3000,
   });
-
-  // Extract exams array from the API response
-  const exams = data?.data || [];
 
   const deleteMutation = useMutation(
     (id: string) => examAPI.delete(id),
@@ -41,42 +59,42 @@ const Exams = () => {
   );
 
   const handleDeleteClick = (id: string) => {
-    setDeletePrompt({ isOpen: true, examId: id });
+    setDeleteDialog({ isOpen: true, examId: id });
   };
 
   const handleDeleteConfirm = async () => {
-    if (deletePrompt.examId) {
-      await deleteMutation.mutateAsync(deletePrompt.examId);
+    if (deleteDialog.examId) {
+      await deleteMutation.mutateAsync(deleteDialog.examId);
     }
-    setDeletePrompt({ isOpen: false, examId: null });
-  };
-
-  const handleDeleteCancel = () => {
-    setDeletePrompt({ isOpen: false, examId: null });
+    setDeleteDialog({ isOpen: false, examId: null });
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'upcoming':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100';
+        return 'warning';
       case 'active':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100';
+        return 'success';
       case 'completed':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100';
+        return 'secondary';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100';
+        return 'default';
     }
   };
 
+  const exams = examsData?.data || [];
   const filteredExams = exams.filter((exam: Exam) => {
-    const searchTerm = searchQuery.toLowerCase();
-    return (
-      exam.name.toLowerCase().includes(searchTerm) ||
-      exam.subject.toLowerCase().includes(searchTerm) ||
-      exam.date.includes(searchTerm) ||
-      exam.duration.toLowerCase().includes(searchTerm) ||
-      exam.status.toLowerCase().includes(searchTerm)
+    const matchesSearch = (
+      exam.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      exam.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      exam.date.includes(searchQuery) ||
+      exam.duration.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      exam.status.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    const matchesStatus = statusFilter === 'all' || exam.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
   });
 
   if (isLoading) {
@@ -90,92 +108,132 @@ const Exams = () => {
   return (
     <div className="h-[calc(100vh-60px)] lg:h-[calc(100vh-120px)] overflow-y-auto">
       <div className="px-4 lg:px-8 py-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Exams</h1>
-          <button 
-            onClick={() => navigate('/exams/new')}
-            className="action-button"
-          >
-            <Plus className="h-5 w-5" />
-            Create Exam
-          </button>
-        </div>
-
-        <div className="bg-card rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border border-border">
-          <div className="p-4 border-b border-border">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-              <input
-                type="text"
-                placeholder="Search exams..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-input rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground placeholder-muted-foreground"
-              />
-            </div>
+        <div className="flex flex-col gap-6">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <h1 className="text-2xl font-bold text-foreground">Exams</h1>
+            <Button
+              onClick={() => navigate('/exams/new')}
+              size="sm"
+              className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white hover:brightness-110"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Create Exam
+            </Button>
           </div>
 
-          <div className="overflow-x-auto">
-            <div className="min-w-[800px] lg:min-w-full">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-muted">
-                    <th className="text-left py-3 px-4 text-muted-foreground">Exam Name</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground">Subject</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground">Date</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground">Duration</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground">Status</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground">Total Marks</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredExams.map((exam: Exam) => (
-                    <tr key={exam._id} className="border-b border-border">
-                      <td className="py-3 px-4 text-card-foreground">{exam.name}</td>
-                      <td className="py-3 px-4 text-card-foreground">{exam.subject}</td>
-                      <td className="py-3 px-4 text-muted-foreground">
-                        {new Date(exam.date).toLocaleDateString()}
-                      </td>
-                      <td className="py-3 px-4 text-muted-foreground">{exam.duration}</td>
-                      <td className="py-3 px-4">
-                        <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(exam.status)}`}>
-                          {exam.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-primary font-semibold">{exam.totalMarks}</td>
-                      <td className="py-3 px-4">
-                        <div className="flex gap-2">
-                          <button 
-                            className="text-primary hover:text-primary/80"
-                            onClick={() => navigate(`/exams/${exam._id}/edit`)}
-                          >
-                            <Edit2 className="h-5 w-5" />
-                          </button>
-                          <button 
-                            className="text-destructive hover:text-destructive/80"
-                            onClick={() => handleDeleteClick(exam._id)}
-                          >
-                            <Trash2 className="h-5 w-5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+          {/* Filters */}
+          <Card>
+            <CardContent className="p-4 flex flex-col sm:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Search exams..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+              <Select
+                value={statusFilter}
+                onValueChange={setStatusFilter}
+              >
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="upcoming">Upcoming</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardContent>
+          </Card>
 
-        <DeletePrompt
-          isOpen={deletePrompt.isOpen}
-          title="Delete Exam"
-          message="Are you sure you want to delete this exam? This action cannot be undone."
-          onConfirm={handleDeleteConfirm}
-          onCancel={handleDeleteCancel}
-        />
+          {/* Exams Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredExams.map((exam: Exam) => (
+              <Card key={exam._id} className="hover:shadow-lg transition-shadow duration-200">
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-start">
+                    <Badge variant={getStatusColor(exam.status)} className="capitalize mb-2">
+                      {exam.status}
+                    </Badge>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => navigate(`/exams/${exam._id}/edit`)}
+                      >
+                        <Edit2 className="h-4 w-4 text-primary" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleDeleteClick(exam._id)}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </div>
+                  <CardTitle className="text-lg font-semibold line-clamp-1">
+                    {exam.name}
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">{exam.subject}</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      {new Date(exam.date).toLocaleDateString()}
+                    </div>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Clock className="h-4 w-4 mr-2" />
+                      {exam.duration}
+                    </div>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Award className="h-4 w-4 mr-2" />
+                      Total Marks: {exam.totalMarks}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {filteredExams.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No exams found matching your criteria.</p>
+            </div>
+          )}
+        </div>
       </div>
+
+      <AlertDialog 
+        open={deleteDialog.isOpen} 
+        onOpenChange={(isOpen) => 
+          setDeleteDialog({ isOpen, examId: isOpen ? deleteDialog.examId : null })
+        }
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Exam</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this exam? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
