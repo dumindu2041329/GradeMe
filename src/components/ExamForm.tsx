@@ -17,6 +17,7 @@ interface Exam {
   subject: string;
   date: string;
   duration: string;
+  status: 'upcoming' | 'active' | 'completed';
   questions: Question[];
   totalMarks: number;
 }
@@ -46,7 +47,7 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
 
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-[99999]">
-      <div className="bg-gradient-to-br from-white via-white to-red-50 dark:from-gray-900 dark:via-gray-900 dark:to-red-950 p-6 rounded-xl shadow-2xl border-2 border-red-100 dark:border-red-900 backdrop-blur-xl backdrop-saturate-150 animate-modal-appear max-w-md w-full mx-4 relative">
+      <div className="bg-gradient-to-br from-white via-white to-red-50 dark:from-gray-900 dark:via-gray-900 dark:to-red-950 p-6 rounded-xl shadow-2xl border-2 border-red-100 dark:border-red-900 backdrop-blur-xl backdrop-saturate-150 animate-modal-appear max-w-md w-full relative">
         <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center border-4 border-white dark:border-gray-900 shadow-xl">
           <AlertTriangle className="h-12 w-12 text-white" />
         </div>
@@ -101,6 +102,7 @@ const ExamForm = () => {
     subject: '',
     date: '',
     duration: DURATION_OPTIONS[0],
+    status: 'upcoming',
     questions: [],
     totalMarks: 0
   });
@@ -121,6 +123,7 @@ const ExamForm = () => {
         subject: 'Mathematics',
         date: '2024-03-20',
         duration: '3 hours',
+        status: 'upcoming',
         questions: [
           {
             id: 1,
@@ -197,6 +200,7 @@ const ExamForm = () => {
         subject: exam.subject,
         date: exam.date,
         duration: exam.duration,
+        status: exam.status,
         questions: exam.questions,
         totalMarks: exam.totalMarks
       };
@@ -320,7 +324,7 @@ const ExamForm = () => {
                     type="text"
                     value={exam.name}
                     onChange={(e) => setExam({ ...exam, name: e.target.value })}
-                    className={`mt-1 block w-full rounded-md border shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 ${
+                    className={`mt-1 block w-full rounded-md shadow-sm focus:ring-primary focus:border-primary bg-background text-foreground px-3 py-2 ${
                       formErrors.name ? 'border-destructive' : 'border-input'
                     }`}
                     required
@@ -335,7 +339,7 @@ const ExamForm = () => {
                     type="text"
                     value={exam.subject}
                     onChange={(e) => setExam({ ...exam, subject: e.target.value })}
-                    className={`mt-1 block w-full rounded-md border shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 ${
+                    className={`mt-1 block w-full rounded-md shadow-sm focus:ring-primary focus:border-primary bg-background text-foreground px-3 py-2 ${
                       formErrors.subject ? 'border-destructive' : 'border-input'
                     }`}
                     required
@@ -350,7 +354,7 @@ const ExamForm = () => {
                     type="date"
                     value={exam.date}
                     onChange={(e) => setExam({ ...exam, date: e.target.value })}
-                    className={`mt-1 block w-full rounded-md border shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 ${
+                    className={`mt-1 block w-full rounded-md shadow-sm focus:ring-primary focus:border-primary bg-background text-foreground px-3 py-2 ${
                       formErrors.date ? 'border-destructive' : 'border-input'
                     }`}
                     required
@@ -372,6 +376,19 @@ const ExamForm = () => {
                         {duration}
                       </option>
                     ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-card-foreground">Status</label>
+                  <select
+                    value={exam.status}
+                    onChange={(e) => setExam({ ...exam, status: e.target.value as 'upcoming' | 'active' | 'completed' })}
+                    className="mt-1 block w-full rounded-md border-input shadow-sm focus:border-primary focus:ring-primary bg-background text-foreground px-3 py-2 border"
+                    required
+                  >
+                    <option value="upcoming">Upcoming</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
                   </select>
                 </div>
               </div>

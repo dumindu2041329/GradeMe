@@ -12,6 +12,7 @@ export interface MockExam {
   subject: string;
   date: string;
   duration: string;
+  status: 'upcoming' | 'active' | 'completed';
   questions: Array<{
     id: number;
     text: string;
@@ -58,6 +59,7 @@ export const mockExams: MockExam[] = [
     subject: 'Mathematics',
     date: '2024-03-20',
     duration: '3 hours',
+    status: 'upcoming',
     questions: [
       {
         id: 1,
@@ -75,6 +77,7 @@ export const mockExams: MockExam[] = [
     subject: 'Physics',
     date: '2024-03-15',
     duration: '2 hours',
+    status: 'active',
     questions: [
       {
         id: 1,

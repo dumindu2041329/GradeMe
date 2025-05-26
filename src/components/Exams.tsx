@@ -5,21 +5,13 @@ import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { examAPI } from '../services/api';
 import DeletePrompt from './DeletePrompt';
 
-interface Question {
-  id: number;
-  text: string;
-  type: 'mcq' | 'written';
-  options?: string[];
-  marks: number;
-}
-
 interface Exam {
   _id: string;
   name: string;
   subject: string;
   date: string;
   duration: string;
-  questions: Question[];
+  status: 'upcoming' | 'active' | 'completed';
   totalMarks: number;
 }
 
@@ -32,10 +24,12 @@ const Exams = () => {
     examId: null,
   });
 
-  const { data: exams = [], isLoading } = useQuery('exams', async () => {
-    const response = await examAPI.getAll();
-    return response.data;
+  const { data, isLoading } = useQuery('exams', examAPI.getAll, {
+    refetchInterval: 3000, // Poll every 3 seconds
   });
+
+  // Extract exams array from the API response
+  const exams = data?.data || [];
 
   const deleteMutation = useMutation(
     (id: string) => examAPI.delete(id),
@@ -61,13 +55,27 @@ const Exams = () => {
     setDeletePrompt({ isOpen: false, examId: null });
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'upcoming':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100';
+      case 'active':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100';
+      case 'completed':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100';
+    }
+  };
+
   const filteredExams = exams.filter((exam: Exam) => {
     const searchTerm = searchQuery.toLowerCase();
     return (
       exam.name.toLowerCase().includes(searchTerm) ||
       exam.subject.toLowerCase().includes(searchTerm) ||
       exam.date.includes(searchTerm) ||
-      exam.duration.toLowerCase().includes(searchTerm)
+      exam.duration.toLowerCase().includes(searchTerm) ||
+      exam.status.toLowerCase().includes(searchTerm)
     );
   });
 
@@ -116,6 +124,7 @@ const Exams = () => {
                     <th className="text-left py-3 px-4 text-muted-foreground">Subject</th>
                     <th className="text-left py-3 px-4 text-muted-foreground">Date</th>
                     <th className="text-left py-3 px-4 text-muted-foreground">Duration</th>
+                    <th className="text-left py-3 px-4 text-muted-foreground">Status</th>
                     <th className="text-left py-3 px-4 text-muted-foreground">Total Marks</th>
                     <th className="text-left py-3 px-4 text-muted-foreground">Actions</th>
                   </tr>
@@ -129,6 +138,11 @@ const Exams = () => {
                         {new Date(exam.date).toLocaleDateString()}
                       </td>
                       <td className="py-3 px-4 text-muted-foreground">{exam.duration}</td>
+                      <td className="py-3 px-4">
+                        <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(exam.status)}`}>
+                          {exam.status}
+                        </span>
+                      </td>
                       <td className="py-3 px-4 text-primary font-semibold">{exam.totalMarks}</td>
                       <td className="py-3 px-4">
                         <div className="flex gap-2">
@@ -157,7 +171,7 @@ const Exams = () => {
         <DeletePrompt
           isOpen={deletePrompt.isOpen}
           title="Delete Exam"
-          message="Are you sure you want to delete this exam? This action cannot be undone and will remove all associated questions."
+          message="Are you sure you want to delete this exam? This action cannot be undone."
           onConfirm={handleDeleteConfirm}
           onCancel={handleDeleteCancel}
         />
