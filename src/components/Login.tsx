@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Eye, EyeOff, ArrowLeft, GraduationCap, Sun, Moon } from 'lucide-react';
 import { auth } from '../lib/auth';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -86,7 +91,6 @@ const Login = () => {
         if (error) throw error;
         if (!user) throw new Error('Authentication failed');
 
-        // Store auth state
         localStorage.setItem('isAuthenticated', 'true');
         localStorage.setItem('userRole', user.role);
 
@@ -103,46 +107,49 @@ const Login = () => {
   if (resetEmailSent) {
     return (
       <div className="min-h-screen bg-background flex flex-col justify-center px-4 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-card py-8 px-4 shadow-xl rounded-lg sm:px-10 border border-border">
+        <Card className="sm:mx-auto sm:w-full sm:max-w-md">
+          <CardContent className="py-8">
             <div className="text-center">
               <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                 <Lock className="h-6 w-6 text-primary" />
               </div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">Check your email</h2>
-              <p className="text-muted-foreground mb-6">
+              <CardTitle className="text-2xl font-bold mb-2">Check your email</CardTitle>
+              <CardDescription className="mb-6">
                 We've sent password reset instructions to {email}
-              </p>
-              <button
+              </CardDescription>
+              <Button
+                variant="link"
                 onClick={() => {
                   setIsForgotPassword(false);
                   setResetEmailSent(false);
                   setEmail('');
                 }}
-                className="text-primary hover:text-primary/90 flex items-center justify-center gap-2 mx-auto"
+                className="flex items-center gap-2 mx-auto"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back to login
-              </button>
+              </Button>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background flex flex-col justify-center px-4 sm:px-6 lg:px-8">
-      <button
+      <Button
+        variant="outline"
+        size="icon"
         onClick={toggleTheme}
-        className="absolute top-4 right-4 p-2 rounded-lg bg-card border border-border hover:bg-accent transition-colors"
+        className="absolute top-4 right-4"
       >
         {isDark ? (
-          <Sun className="h-5 w-5 text-muted-foreground" />
+          <Sun className="h-5 w-5" />
         ) : (
-          <Moon className="h-5 w-5 text-muted-foreground" />
+          <Moon className="h-5 w-5" />
         )}
-      </button>
+      </Button>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex flex-col items-center">
@@ -156,99 +163,86 @@ const Login = () => {
         </div>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-card py-8 px-4 shadow-xl rounded-lg sm:px-10 border border-border">
+      <Card className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <CardContent className="py-8">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-card-foreground">
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-input rounded-md shadow-sm placeholder-muted-foreground focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email address</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+              />
             </div>
 
             {!isForgotPassword && (
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-card-foreground">
-                  Password
-                </label>
-                <div className="mt-1 relative">
-                  <input
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Input
                     id="password"
-                    name="password"
                     type={showPassword ? 'text' : 'password'}
-                    autoComplete="current-password"
-                    required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2 border border-input rounded-md shadow-sm placeholder-muted-foreground focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background text-foreground pr-10"
+                    placeholder="Enter your password"
                   />
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
                     ) : (
                       <Eye className="h-4 w-4" />
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
 
             {error && (
-              <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
-                {error}
-              </div>
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
             )}
 
-            <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <div className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    {isForgotPassword ? 'Sending reset link...' : 'Signing in...'}
-                  </div>
-                ) : (
-                  isForgotPassword ? 'Send reset link' : 'Sign in'
-                )}
-              </button>
-            </div>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading}
+            >
+              {loading ? (
+                <div className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white\" xmlns="http://www.w3.org/2000/svg\" fill="none\" viewBox="0 0 24 24">
+                    <circle className="opacity-25\" cx="12\" cy="12\" r="10\" stroke="currentColor\" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {isForgotPassword ? 'Sending reset link...' : 'Signing in...'}
+                </div>
+              ) : (
+                isForgotPassword ? 'Send reset link' : 'Sign in'
+              )}
+            </Button>
 
-            <div className="text-sm text-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsForgotPassword(!isForgotPassword);
-                  setError(null);
-                }}
-                className="text-primary hover:text-primary/90"
-              >
-                {isForgotPassword ? 'Back to login' : 'Forgot your password?'}
-              </button>
-            </div>
+            <Button
+              type="button"
+              variant="link"
+              onClick={() => {
+                setIsForgotPassword(!isForgotPassword);
+                setError(null);
+              }}
+              className="w-full"
+            >
+              {isForgotPassword ? 'Back to login' : 'Forgot your password?'}
+            </Button>
           </form>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
