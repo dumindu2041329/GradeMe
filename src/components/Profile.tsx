@@ -4,9 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 
 interface ProfileData {
   name: string;
@@ -31,6 +30,7 @@ const defaultProfileData: ProfileData = {
 };
 
 const Profile = () => {
+  const [activeTab, setActiveTab] = useState<'view' | 'edit'>('view');
   const [profileData, setProfileData] = useState<ProfileData>(defaultProfileData);
   const [editData, setEditData] = useState(profileData);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -45,6 +45,7 @@ const Profile = () => {
   const handleProfileUpdate = (e: React.FormEvent) => {
     e.preventDefault();
     setProfileData(editData);
+    setActiveTab('view');
   };
 
   const handlePasswordChange = (e: React.FormEvent) => {
@@ -52,7 +53,6 @@ const Profile = () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       return;
     }
-    // Handle password change
     setPasswordData({
       currentPassword: '',
       newPassword: '',
@@ -76,7 +76,7 @@ const Profile = () => {
     <div className="container max-w-4xl mx-auto py-8 px-4">
       <h1 className="text-2xl font-bold mb-6">Profile Settings</h1>
 
-      <Tabs defaultValue="view" className="w-full">
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'view' | 'edit')} className="w-full">
         <TabsList className="w-full mb-6">
           <TabsTrigger value="view" className="flex-1">View Profile</TabsTrigger>
           <TabsTrigger value="edit" className="flex-1">Edit Profile</TabsTrigger>
