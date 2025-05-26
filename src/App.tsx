@@ -13,6 +13,7 @@ import Login from './components/Login';
 import StudentDashboard from './components/student/StudentDashboard';
 import StudentProfile from './components/student/StudentProfile';
 import ExamEnvironment from './components/student/ExamEnvironment';
+import AdminProfile from './components/AdminProfile';
 import NotFound from './components/NotFound';
 
 const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
@@ -272,6 +273,13 @@ function App() {
             <PrivateRoute allowedRole="admin">
               <Layout>
                 <Results />
+              </Layout>
+            </PrivateRoute>
+          } />
+          <Route path="/profile" element={
+            <PrivateRoute allowedRole="admin">
+              <Layout>
+                <AdminProfile />
               </Layout>
             </PrivateRoute>
           } />
