@@ -9,7 +9,6 @@ import ExamForm from './components/ExamForm';
 import Students from './components/Students';
 import StudentForm from './components/StudentForm';
 import Results from './components/Results';
-import Profile from './components/Profile';
 import Login from './components/Login';
 import StudentDashboard from './components/student/StudentDashboard';
 import StudentProfile from './components/student/StudentProfile';
@@ -273,13 +272,6 @@ function App() {
             <PrivateRoute allowedRole="admin">
               <Layout>
                 <Results />
-              </Layout>
-            </PrivateRoute>
-          } />
-          <Route path="/profile" element={
-            <PrivateRoute allowedRole="admin">
-              <Layout>
-                <Profile />
               </Layout>
             </PrivateRoute>
           } />
